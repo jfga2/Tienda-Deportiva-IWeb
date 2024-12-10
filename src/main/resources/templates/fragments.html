@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head (titulo)">
+    <meta charset="UTF-8"/>
+    <title th:text="${titulo}"></title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+
+<body>
+<div th:fragment="navbar">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/about">ToDoList</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li th:if="${#session != null and #session.getAttribute('idUsuarioLogeado') != null}" class="nav-item">
+                    <a class="nav-link" th:href="@{'/usuarios/' + ${#session.getAttribute('idUsuarioLogeado')} + '/tareas'}">Tareas</a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ml-auto">
+                <!-- Para usuarios logeados -->
+                <li th:if="${#session != null and #session.getAttribute('idUsuarioLogeado') != null}" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span th:text="${#session.getAttribute('nombreUsuario')}">Usuario</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/cuenta">Cuenta</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" th:href="@{'/logout'}">Cerrar sesión <span th:text="${#session.getAttribute('nombreUsuario')}"></span></a>
+                    </div>
+                </li>
+
+                <!-- Para usuarios no logeados -->
+                <li th:if="${#session == null or #session.getAttribute('idUsuarioLogeado') == null}" class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li th:if="${#session == null or #session.getAttribute('idUsuarioLogeado') == null}" class="nav-item">
+                    <a class="nav-link" href="/registro">Registro</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+</body>
+
+<div th:fragment="javascript">
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+</div>
+
+</html>

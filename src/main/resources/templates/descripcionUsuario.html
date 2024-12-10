@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments :: head (titulo='Descripción de Usuario')"></head>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Detalles de Usuario</h2>
+        <div class="card">
+            <div class="card-body">
+                <p><strong>ID:</strong> <span th:text="${usuario.id}"></span></p>
+                <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
+                <p><strong>Nombre:</strong> <span th:text="${usuario.nombre}"></span></p>
+                <p><strong>Fecha de Nacimiento:</strong> <span th:text="${usuario.fechaNacimiento}"></span></p>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a class="btn btn-primary" th:href="@{/registrados}">Volver al listado</a>
+        </div>
+    </div>
+
+    <div th:replace="fragments::javascript"/>
+</body>
+</html>

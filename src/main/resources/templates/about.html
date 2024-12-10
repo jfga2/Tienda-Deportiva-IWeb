@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Acerca de')"></head>
+
+<body>
+    <div th:replace="fragments :: navbar"></div>
+    <div class="container-fluid">
+        <div class="container-fluid">
+            <h1>ToDoList</h1>
+            <ul>
+                <li>Desarrollada por Juan Fernando Gaviria Alvarez </li>
+                <li>Versión 1.1.0</li>
+                <li>Fecha de release: 29/10/2024</li>
+            </ul>
+        </div>
+    </div>
+
+    <div th:replace="fragments::javascript"/>
+</body>
+</html>
