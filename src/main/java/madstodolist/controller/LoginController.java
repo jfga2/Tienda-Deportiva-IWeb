@@ -25,12 +25,10 @@ public class LoginController {
     @Autowired
     ManagerUserSession managerUserSession;
 
-    /*
     @GetMapping("/")
     public String home(Model model) {
         return "redirect:/login";
     }
-    */
 
     @GetMapping("/login")
     public String loginForm(Model model) {
@@ -47,37 +45,38 @@ public class LoginController {
         if (loginStatus == UsuarioService.LoginStatus.LOGIN_OK) {
             UsuarioData usuario = usuarioService.findByEmail(loginData.geteMail());
 
-            managerUserSession.logearUsuario(usuario.getId());
-            session.setAttribute("nombreUsuario", usuario.getNombre());
+            // Guardamos el ID del usuario en la sesión y si es administrador
+            managerUserSession.logearUsuario(usuario.getId(), usuario.isAdministrador());
 
-            if(usuario.isAdmin()) {
+            // Si el usuario es administrador, redirigimos a la lista de usuarios
+            if (usuario.isAdministrador()) {
                 return "redirect:/registrados";
             }
 
+            // Si no es administrador, redirigimos a la lista de tareas
             return "redirect:/usuarios/" + usuario.getId() + "/tareas";
         } else if (loginStatus == UsuarioService.LoginStatus.USER_NOT_FOUND) {
             model.addAttribute("error", "No existe usuario");
-            return "formLogin";
         } else if (loginStatus == UsuarioService.LoginStatus.ERROR_PASSWORD) {
             model.addAttribute("error", "Contraseña incorrecta");
-            return "formLogin";
-        } else if (loginStatus == UsuarioService.LoginStatus.LOGIN_BLOCKED) {
-            model.addAttribute("error", "Tu cuenta está bloqueada. Contacta con el administrador.");
-            return "formLogin";
+        } else if (loginStatus == UsuarioService.LoginStatus.USER_BLOCKED) {
+            model.addAttribute("error", "Usuario bloqueado. Contacte con el administrador.");
         }
+
         return "formLogin";
     }
 
     @GetMapping("/registro")
     public String registroForm(Model model) {
-        boolean existeAdmin = usuarioService.existsAdmin();
+        // Verificar si ya existe un administrador registrado
+        boolean existeAdmin = usuarioService.existeAdministrador();
         model.addAttribute("existeAdmin", existeAdmin);
         model.addAttribute("registroData", new RegistroData());
         return "formRegistro";
     }
 
-   @PostMapping("/registro")
-   public String registroSubmit(@Valid RegistroData registroData, BindingResult result, Model model) {
+    @PostMapping("/registro")
+    public String registroSubmit(@Valid RegistroData registroData, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             return "formRegistro";
@@ -89,25 +88,45 @@ public class LoginController {
             return "formRegistro";
         }
 
+        // Si ya existe un administrador, no permitimos registrar más
+        if (registroData.isAdministrador() && usuarioService.existeAdministrador()) {
+            model.addAttribute("error", "Ya existe un administrador registrado.");
+            return "formRegistro";
+        }
+
         UsuarioData usuario = new UsuarioData();
         usuario.setEmail(registroData.getEmail());
         usuario.setPassword(registroData.getPassword());
         usuario.setFechaNacimiento(registroData.getFechaNacimiento());
         usuario.setNombre(registroData.getNombre());
-
-        if (registroData.isAdmin() && !usuarioService.existsAdmin()) {
-            usuario.setAdmin(true);
-        }
+        usuario.setAdministrador(registroData.isAdministrador());
 
         usuarioService.registrar(usuario);
-
         return "redirect:/login";
-   }
+    }
 
-   @GetMapping("/logout")
-   public String logout(HttpSession session) {
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
         managerUserSession.logout();
-        session.setAttribute("nombreUsuario", null);
         return "redirect:/login";
-   }
+    }
+
+    // Método para añadir atributos comunes a todas las vistas, como el usuario logueado
+    @ModelAttribute
+    public void addAttributes(Model model) {
+        Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
+        if (idUsuarioLogeado != null) {
+            UsuarioData usuario = usuarioService.findById(idUsuarioLogeado);
+            if (usuario != null) {
+                model.addAttribute("nombreUsuario", usuario.getNombre());
+                model.addAttribute("usuarioId", usuario.getId());
+            } else {
+                model.addAttribute("nombreUsuario", null);
+                model.addAttribute("usuarioId", null);
+            }
+        } else {
+            model.addAttribute("nombreUsuario", null);
+            model.addAttribute("usuarioId", null);
+        }
+    }
 }

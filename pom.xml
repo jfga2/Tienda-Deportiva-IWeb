@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>es.ua.mads</groupId>
-    <artifactId>mads-todolist-juan-fernando-gaviria-alvarez</artifactId>
-    <version>1.1.0</version>
+    <artifactId>todolist-equipo-2</artifactId>
+    <version>1.3.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -34,6 +34,11 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.22</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

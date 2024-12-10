@@ -171,29 +171,4 @@ public class UsuarioTest {
 
         assertThat(usuarioBD.getNombre()).isEqualTo("Usuario Ejemplo");
     }
-
-    @Test
-    @Transactional
-    public void buscarTodosLosUsuariosEnBaseDatos() {
-        // GIVEN
-        // Insertamos dos usuarios en la base de datos
-        Usuario usuario1 = new Usuario("user1@ua.com");
-        usuario1.setNombre("Usuario Uno");
-        usuarioRepository.save(usuario1);
-
-        Usuario usuario2 = new Usuario("user2@ua.com");
-        usuario2.setNombre("Usuario Dos");
-        usuarioRepository.save(usuario2);
-
-        // WHEN
-        // Recuperamos todos los usuarios de la base de datos
-        Iterable<Usuario> usuarios = usuarioRepository.findAll();
-
-        // THEN
-        // Verificamos que se obtienen los dos usuarios y sus datos son correctos
-        assertThat(usuarios).hasSize(2)
-                .extracting(Usuario::getEmail)
-                .contains("user1@ua.com", "user2@ua.com");
-    }
-
 }

@@ -4,18 +4,28 @@
 <head th:replace="fragments :: head (titulo='Acerca de')"></head>
 
 <body>
-    <div th:replace="fragments :: navbar"></div>
+
+<div th:replace="fragments::menu"></div>
+
+
+<div class="container-fluid">
     <div class="container-fluid">
-        <div class="container-fluid">
-            <h1>ToDoList</h1>
+        <h1>ToDoList-equipo-2</h1>
+        <ul>
+            <li>Desarrollada por:</li>
             <ul>
-                <li>Desarrollada por Juan Fernando Gaviria Alvarez </li>
-                <li>Versión 1.1.0</li>
-                <li>Fecha de release: 29/10/2024</li>
+                <li>Youness Zahid Chrif</li>
+                <li>Ali El Ouali Lakssiouar</li>
+                <li>Juan Fernando Gaviria Álvarez</li>
             </ul>
-        </div>
+            <li>Versión 1.3.0</li>
+            <li>Fecha de release: 01/12/2024</li>
+        </ul>
     </div>
 
-    <div th:replace="fragments::javascript"/>
+</div>
+
+<div th:replace="fragments::javascript"/>
+
 </body>
 </html>

@@ -15,15 +15,22 @@ public class ManagerUserSession {
     // una autorización sencilla. En los métodos de controllers
     // comprobamos si el id del usuario logeado coincide con el obtenido
     // desde la URL
-    public void logearUsuario(Long idUsuario) {
+    public void logearUsuario(Long idUsuario, boolean esAdministrador) {
         session.setAttribute("idUsuarioLogeado", idUsuario);
+        session.setAttribute("esAdministrador", esAdministrador); // Guardamos si el usuario es administrador
     }
 
     public Long usuarioLogeado() {
         return (Long) session.getAttribute("idUsuarioLogeado");
     }
 
+    public boolean esAdministrador() {
+        Boolean esAdmin = (Boolean) session.getAttribute("esAdministrador");
+        return esAdmin != null && esAdmin; // Verificamos si el usuario es administrador
+    }
+
     public void logout() {
         session.setAttribute("idUsuarioLogeado", null);
+        session.setAttribute("esAdministrador", null);
     }
 }

@@ -11,8 +11,8 @@ public class UsuarioData {
     private String nombre;
     private String password;
     private Date fechaNacimiento;
-    private boolean admin;
-    private boolean bloqueado;
+    private boolean administrador;  // Campo para administrador
+    private boolean bloqueado;  // Nuevo campo para controlar si el usuario está bloqueado
 
     // Getters y setters
 
@@ -40,9 +40,13 @@ public class UsuarioData {
         this.nombre = nombre;
     }
 
-    public void setPassword(String password) { this.password = password; }
+    public String getPassword() {
+        return password;
+    }
 
-    public String getPassword() { return password; }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public Date getFechaNacimiento() {
         return fechaNacimiento;
@@ -52,12 +56,12 @@ public class UsuarioData {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    public boolean isAdmin() {
-        return admin;
+    public boolean isAdministrador() {
+        return administrador;
     }
 
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
+    public void setAdministrador(boolean administrador) {
+        this.administrador = administrador;
     }
 
     public boolean isBloqueado() {
@@ -67,7 +71,6 @@ public class UsuarioData {
     public void setBloqueado(boolean bloqueado) {
         this.bloqueado = bloqueado;
     }
-
 
     // Sobreescribimos equals y hashCode para que dos usuarios sean iguales
     // si tienen el mismo ID (ignoramos el resto de atributos)

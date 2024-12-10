@@ -5,7 +5,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.Email;
 import java.util.Date;
 
-// Clase de datos para el formulario de registro
 public class RegistroData {
     @Email
     private String eMail;
@@ -13,7 +12,9 @@ public class RegistroData {
     private String nombre;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date fechaNacimiento;
-    private boolean admin;
+
+    // Atributo para marcar si el usuario es administrador
+    private boolean administrador;
 
     public String getEmail() {
         return eMail;
@@ -47,11 +48,11 @@ public class RegistroData {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    public boolean isAdmin() {
-        return admin;
+    public boolean isAdministrador() {
+        return administrador;
     }
 
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
+    public void setAdministrador(boolean administrador) {
+        this.administrador = administrador;
     }
 }

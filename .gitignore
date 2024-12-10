@@ -1,0 +1,11 @@
+# Ignorar archivos generados por Maven
+/target/
+
+# Ignorar archivos de configuración de Eclipse
+.classpath
+.project
+.settings/
+
+# Ignorar archivos de configuración de IntelliJ IDEA
+.idea/
+*.iml

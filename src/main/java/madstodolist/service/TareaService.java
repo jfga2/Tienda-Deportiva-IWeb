@@ -14,9 +14,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
 import java.util.List;
-
 import java.util.stream.Collectors;
-
 
 @Service
 public class TareaService {
@@ -25,8 +23,10 @@ public class TareaService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
     @Autowired
     private TareaRepository tareaRepository;
+
     @Autowired
     private ModelMapper modelMapper;
 
@@ -49,12 +49,10 @@ public class TareaService {
         if (usuario == null) {
             throw new TareaServiceException("Usuario " + idUsuario + " no existe al listar tareas ");
         }
-        // Hacemos uso de Java Stream API para mapear la lista de entidades a DTOs.
         List<TareaData> tareas = usuario.getTareas().stream()
                 .map(tarea -> modelMapper.map(tarea, TareaData.class))
                 .collect(Collectors.toList());
-        // Ordenamos la lista por id de tarea
-        Collections.sort(tareas, (a, b) -> a.getId() < b.getId() ? -1 : a.getId() == b.getId() ? 0 : 1);
+        Collections.sort(tareas, (a, b) -> a.getId() < b.getId() ? -1 : a.getId().equals(b.getId()) ? 0 : 1);
         return tareas;
     }
 
@@ -63,7 +61,7 @@ public class TareaService {
         logger.debug("Buscando tarea " + tareaId);
         Tarea tarea = tareaRepository.findById(tareaId).orElse(null);
         if (tarea == null) return null;
-        else return modelMapper.map(tarea, TareaData.class);
+        return modelMapper.map(tarea, TareaData.class);
     }
 
     @Transactional
@@ -96,5 +94,35 @@ public class TareaService {
             throw new TareaServiceException("No existe tarea o usuario id");
         }
         return usuario.getTareas().contains(tarea);
+    }
+
+    // Nuevo método: obtener tareas paginadas para un usuario
+    @Transactional(readOnly = true)
+    public List<TareaData> getTareasPaginadasUsuario(Long idUsuario, int page, int size) {
+        logger.debug("Obteniendo tareas paginadas para el usuario " + idUsuario + " - página " + page);
+        Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
+        if (usuario == null) {
+            throw new TareaServiceException("Usuario " + idUsuario + " no existe al listar tareas paginadas");
+        }
+        List<Tarea> tareas = usuario.getTareas().stream()
+                .sorted((a, b) -> Long.compare(a.getId(), b.getId()))
+                .skip((long) page * size) // Ignorar las tareas anteriores a la página actual
+                .limit(size)              // Limitar al tamaño de página especificado
+                .collect(Collectors.toList());
+
+        return tareas.stream()
+                .map(tarea -> modelMapper.map(tarea, TareaData.class))
+                .collect(Collectors.toList());
+    }
+
+    // Nuevo método: obtener el número total de tareas para un usuario
+    @Transactional(readOnly = true)
+    public int getTotalTareasUsuario(Long idUsuario) {
+        logger.debug("Obteniendo el número total de tareas del usuario " + idUsuario);
+        Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
+        if (usuario == null) {
+            throw new TareaServiceException("Usuario " + idUsuario + " no existe al contar tareas");
+        }
+        return usuario.getTareas().size();
     }
 }

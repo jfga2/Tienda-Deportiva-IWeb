@@ -1,51 +1,48 @@
 package madstodolist.controller;
 
+import java.util.Arrays;
+import madstodolist.dto.TareaData;
 import madstodolist.dto.UsuarioData;
+import madstodolist.service.TareaService;
 import madstodolist.service.UsuarioService;
+import madstodolist.authentication.ManagerUserSession;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.mock.web.MockHttpSession;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-//
-// A diferencia de los tests web de tarea, donde usábamos los datos
-// de prueba de la base de datos, aquí vamos a practicar otro enfoque:
-// moquear el usuarioService.
 public class UsuarioWebTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    // Moqueamos el usuarioService.
-    // En los tests deberemos proporcionar el valor devuelto por las llamadas
-    // a los métodos de usuarioService que se van a ejecutar cuando se realicen
-    // las peticiones a los endpoint.
     @MockBean
     private UsuarioService usuarioService;
 
+    @MockBean
+    private TareaService tareaService;
+
+    @MockBean
+    private ManagerUserSession managerUserSession;
+
+    // TEST LOGIN
     @Test
     public void servicioLoginUsuarioOK() throws Exception {
-        // GIVEN
-        // Moqueamos la llamada a usuarioService.login para que
-        // devuelva un LOGIN_OK y la llamada a usuarioServicie.findByEmail
-        // para que devuelva un usuario determinado.
-
         UsuarioData anaGarcia = new UsuarioData();
         anaGarcia.setNombre("Ana García");
         anaGarcia.setId(1L);
@@ -54,11 +51,6 @@ public class UsuarioWebTest {
                 .thenReturn(UsuarioService.LoginStatus.LOGIN_OK);
         when(usuarioService.findByEmail("ana.garcia@gmail.com"))
                 .thenReturn(anaGarcia);
-
-        // WHEN, THEN
-        // Realizamos una petición POST al login pasando los datos
-        // esperados en el mock, la petición devolverá una redirección a la
-        // URL con las tareas del usuario
 
         this.mockMvc.perform(post("/login")
                         .param("eMail", "ana.garcia@gmail.com")
@@ -69,109 +61,177 @@ public class UsuarioWebTest {
 
     @Test
     public void servicioLoginUsuarioNotFound() throws Exception {
-        // GIVEN
-        // Moqueamos el método usuarioService.login para que devuelva
-        // USER_NOT_FOUND
         when(usuarioService.login("pepito.perez@gmail.com", "12345678"))
                 .thenReturn(UsuarioService.LoginStatus.USER_NOT_FOUND);
 
-        // WHEN, THEN
-        // Realizamos una petición POST con los datos del usuario mockeado y
-        // se debe devolver una página que contenga el mensaja "No existe usuario"
         this.mockMvc.perform(post("/login")
-                        .param("eMail","pepito.perez@gmail.com")
-                        .param("password","12345678"))
+                        .param("eMail", "pepito.perez@gmail.com")
+                        .param("password", "12345678"))
                 .andExpect(content().string(containsString("No existe usuario")));
     }
 
     @Test
     public void servicioLoginUsuarioErrorPassword() throws Exception {
-        // GIVEN
-        // Moqueamos el método usuarioService.login para que devuelva
-        // ERROR_PASSWORD
         when(usuarioService.login("ana.garcia@gmail.com", "000"))
                 .thenReturn(UsuarioService.LoginStatus.ERROR_PASSWORD);
 
-        // WHEN, THEN
-        // Realizamos una petición POST con los datos del usuario mockeado y
-        // se debe devolver una página que contenga el mensaja "Contraseña incorrecta"
         this.mockMvc.perform(post("/login")
-                        .param("eMail","ana.garcia@gmail.com")
-                        .param("password","000"))
+                        .param("eMail", "ana.garcia@gmail.com")
+                        .param("password", "000"))
                 .andExpect(content().string(containsString("Contraseña incorrecta")));
     }
 
     @Test
-    public void redirigirAdminALaListaDeUsuariosAlIniciarSesion() throws Exception {
-        // GIVEN
-        UsuarioData usuarioAdmin = new UsuarioData();
-        usuarioAdmin.setId(1L);
-        usuarioAdmin.setNombre("Admin Ejemplo");
-        usuarioAdmin.setAdmin(true);
+    public void loginMuestraMenuUsuarioCorrectamente() throws Exception {
+        UsuarioData usuario = new UsuarioData();
+        usuario.setNombre("Ana García");
+        usuario.setId(1L);
 
+        when(usuarioService.login("ana.garcia@gmail.com", "12345678"))
+                .thenReturn(UsuarioService.LoginStatus.LOGIN_OK);
+        when(usuarioService.findByEmail("ana.garcia@gmail.com"))
+                .thenReturn(usuario);
+        when(usuarioService.findById(1L)).thenReturn(usuario);
 
-        // Moqueamos el servicio para simular un inicio de sesión exitoso como administrador
-        when(usuarioService.login("admin@ua.com", "12345")).thenReturn(UsuarioService.LoginStatus.LOGIN_OK);
-        when(usuarioService.findByEmail("admin@ua.com")).thenReturn(usuarioAdmin);
+        when(managerUserSession.usuarioLogeado()).thenReturn(1L);
+        when(tareaService.allTareasUsuario(1L)).thenReturn(Collections.emptyList());
 
-        // WHEN, THEN
+        MockHttpSession session = new MockHttpSession();
         this.mockMvc.perform(post("/login")
-                        .param("eMail", "admin@ua.com")
-                        .param("password", "12345"))
+                        .param("eMail", "ana.garcia@gmail.com")
+                        .param("password", "12345678")
+                        .session(session))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/registrados"));
-    }
+                .andExpect(redirectedUrl("/usuarios/1/tareas"));
 
-    @Test
-    public void noMostrarCheckboxAdminSiYaExisteAdmin() throws Exception {
-        // GIVEN
-        when(usuarioService.existsAdmin()).thenReturn(true);
-
-        // WHEN, THEN
-        this.mockMvc.perform(get("/registro"))
+        this.mockMvc.perform(get("/usuarios/1/tareas").session(session))
                 .andExpect(status().isOk())
-                .andExpect(content().string(not(containsString("Registrar como administrador"))));
+                .andExpect(content().string(containsString("Ana García")))
+                .andExpect(content().string(containsString("Cerrar sesión")));
+    }
+
+    // TEST LISTA DE USUARIOS
+    @Test
+    public void getListaUsuariosRegistradosDevuelveOK() throws Exception {
+        when(managerUserSession.usuarioLogeado()).thenReturn(1L);
+        when(managerUserSession.esAdministrador()).thenReturn(true);
+        when(usuarioService.findAllUsuarios()).thenReturn(Collections.emptyList());
+
+        this.mockMvc.perform(get("/registrados"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("listaUsuariosRegistrados"))
+                .andExpect(content().string(containsString("Usuarios Registrados")));
     }
 
     @Test
-    public void accesoAListaUsuariosConPermisoDebeFuncionar() throws Exception {
-        // GIVEN
-        // Usuario administrador en sesión
-        UsuarioData usuarioAdmin = new UsuarioData();
-        usuarioAdmin.setId(1L);
-        usuarioAdmin.setAdmin(true);
-        when(usuarioService.findById(1L)).thenReturn(usuarioAdmin);
+    public void getListaUsuariosRegistradosMuestraUsuarios() throws Exception {
+        UsuarioData usuario1 = new UsuarioData();
+        usuario1.setId(1L);
+        usuario1.setEmail("ana.garcia@gmail.com");
 
-        // WHEN, THEN
-        this.mockMvc.perform(get("/registrados").sessionAttr("idUsuarioLogeado", 1L))
-                .andExpect(status().isOk());
+        UsuarioData usuario2 = new UsuarioData();
+        usuario2.setId(2L);
+        usuario2.setEmail("juan.perez@gmail.com");
+
+        when(managerUserSession.usuarioLogeado()).thenReturn(1L);
+        when(managerUserSession.esAdministrador()).thenReturn(true);
+        when(usuarioService.findAllUsuarios()).thenReturn(Arrays.asList(usuario1, usuario2));
+
+        this.mockMvc.perform(get("/registrados"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("listaUsuariosRegistrados"))
+                .andExpect(content().string(containsString("ana.garcia@gmail.com")))
+                .andExpect(content().string(containsString("juan.perez@gmail.com")));
     }
 
     @Test
-    public void accesoAListaUsuariosSinPermisoDebeFallar() throws Exception {
-        // GIVEN
-        // Usuario no administrador en sesión
+    public void getDescripcionUsuarioDevuelveUsuarioCorrecto() throws Exception {
+        UsuarioData usuario = new UsuarioData();
+        usuario.setId(1L);
+        usuario.setEmail("ana.garcia@gmail.com");
+        usuario.setNombre("Ana García");
+
+        when(managerUserSession.usuarioLogeado()).thenReturn(1L);
+        when(managerUserSession.esAdministrador()).thenReturn(true);
+        when(usuarioService.findById(1L)).thenReturn(usuario);
+
+        this.mockMvc.perform(get("/registrados/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("usuarioDescripcion"))
+                .andExpect(content().string(containsString("Ana García")))
+                .andExpect(content().string(containsString("ana.garcia@gmail.com")));
+    }
+
+    @Test
+    public void getDescripcionUsuarioNoEncontrado() throws Exception {
+        when(managerUserSession.usuarioLogeado()).thenReturn(1L);
+        when(managerUserSession.esAdministrador()).thenReturn(true);
+        when(usuarioService.findById(1L)).thenReturn(null);
+
+        this.mockMvc.perform(get("/registrados/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    // TESTS DE PROTECCIÓN DE ACCESO
+    @Test
+    public void accesoListadoUsuariosRedirigeLoginCuandoNoEstaLogueado() throws Exception {
+        when(managerUserSession.usuarioLogeado()).thenReturn(null);
+
+        this.mockMvc.perform(get("/registrados"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
+    }
+
+    @Test
+    public void accesoListadoUsuariosProhibidoParaNoAdministradores() throws Exception {
+        Long usuarioId = 1L;
         UsuarioData usuarioNoAdmin = new UsuarioData();
-        usuarioNoAdmin.setId(2L);
-        usuarioNoAdmin.setAdmin(false);
-        when(usuarioService.findById(2L)).thenReturn(usuarioNoAdmin);
+        usuarioNoAdmin.setId(usuarioId);
+        usuarioNoAdmin.setNombre("Juan");
+        usuarioNoAdmin.setAdministrador(false);
 
-        // WHEN, THEN
-        this.mockMvc.perform(get("/registrados").sessionAttr("idUsuarioLogeado", 2L))
+        when(managerUserSession.usuarioLogeado()).thenReturn(usuarioId);
+        when(managerUserSession.esAdministrador()).thenReturn(false);
+        when(usuarioService.findById(usuarioId)).thenReturn(usuarioNoAdmin);
+
+        this.mockMvc.perform(get("/registrados"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void loginUsuarioBloqueadoDevuelveError() throws Exception {
-        // GIVEN
-        when(usuarioService.login("user@ua", "123")).thenReturn(UsuarioService.LoginStatus.LOGIN_BLOCKED);
+    public void administradorBloqueaUsuario() throws Exception {
+        Long adminId = 1L;
+        Long usuarioId = 2L;
+        UsuarioData admin = new UsuarioData();
+        admin.setId(adminId);
+        admin.setAdministrador(true);
 
-        // WHEN, THEN
-        this.mockMvc.perform(post("/login")
-                        .param("eMail", "user@ua")
-                        .param("password", "123"))
-                .andExpect(content().string(containsString("Tu cuenta está bloqueada. Contacta con el administrador.")));
+        when(managerUserSession.usuarioLogeado()).thenReturn(adminId);
+        when(managerUserSession.esAdministrador()).thenReturn(true);
+        when(usuarioService.findById(adminId)).thenReturn(admin);
+
+        this.mockMvc.perform(post("/registrados/" + usuarioId + "/bloquear")
+                        .param("accion", "bloquear"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/registrados"));
+
+        verify(usuarioService).cambiarEstadoBloqueoUsuario(usuarioId, true);
     }
 
 
+    // TEST DE LOGIN DE USUARIO BLOQUEADO
+    @Test
+    public void usuarioBloqueadoIntentaLogin() throws Exception {
+        String email = "usuario.bloqueado@gmail.com";
+        String password = "password";
+
+        when(usuarioService.login(email, password))
+                .thenReturn(UsuarioService.LoginStatus.USER_BLOCKED);
+
+        this.mockMvc.perform(post("/login")
+                        .param("eMail", email)
+                        .param("password", password))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Usuario bloqueado. Contacte con el administrador.")));
+    }
 }

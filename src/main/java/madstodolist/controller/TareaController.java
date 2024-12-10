@@ -1,8 +1,8 @@
 package madstodolist.controller;
 
 import madstodolist.authentication.ManagerUserSession;
-import madstodolist.controller.exception.UsuarioNoLogeadoException;
 import madstodolist.controller.exception.TareaNotFoundException;
+import madstodolist.controller.exception.UsuarioNoLogeadoException;
 import madstodolist.dto.TareaData;
 import madstodolist.dto.UsuarioData;
 import madstodolist.service.TareaService;
@@ -28,14 +28,27 @@ public class TareaController {
     @Autowired
     ManagerUserSession managerUserSession;
 
+    // Este método comprueba si el usuario está logueado y lanza una excepción si no lo está
     private void comprobarUsuarioLogeado(Long idUsuario) {
         Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
-        if (!idUsuario.equals(idUsuarioLogeado))
+        if (idUsuarioLogeado == null || !idUsuario.equals(idUsuarioLogeado)) {
             throw new UsuarioNoLogeadoException();
+        }
+    }
+
+    // Añadimos los atributos comunes al modelo (nombreUsuario y usuarioId) si el usuario está logueado
+    @ModelAttribute
+    public void addAttributes(Model model) {
+        Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
+        if (idUsuarioLogeado != null) {
+            UsuarioData usuario = usuarioService.findById(idUsuarioLogeado);
+            model.addAttribute("nombreUsuario", usuario.getNombre());
+            model.addAttribute("usuarioId", usuario.getId());
+        }
     }
 
     @GetMapping("/usuarios/{id}/tareas/nueva")
-    public String formNuevaTarea(@PathVariable(value="id") Long idUsuario,
+    public String formNuevaTarea(@PathVariable(value = "id") Long idUsuario,
                                  @ModelAttribute TareaData tareaData, Model model,
                                  HttpSession session) {
 
@@ -47,7 +60,7 @@ public class TareaController {
     }
 
     @PostMapping("/usuarios/{id}/tareas/nueva")
-    public String nuevaTarea(@PathVariable(value="id") Long idUsuario, @ModelAttribute TareaData tareaData,
+    public String nuevaTarea(@PathVariable(value = "id") Long idUsuario, @ModelAttribute TareaData tareaData,
                              Model model, RedirectAttributes flash,
                              HttpSession session) {
 
@@ -56,22 +69,35 @@ public class TareaController {
         tareaService.nuevaTareaUsuario(idUsuario, tareaData.getTitulo());
         flash.addFlashAttribute("mensaje", "Tarea creada correctamente");
         return "redirect:/usuarios/" + idUsuario + "/tareas";
-     }
+    }
 
     @GetMapping("/usuarios/{id}/tareas")
-    public String listadoTareas(@PathVariable(value="id") Long idUsuario, Model model, HttpSession session) {
+    public String listadoTareas(@PathVariable(value = "id") Long idUsuario,
+                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "6") int size,
+                                Model model,
+                                HttpSession session) {
 
-        comprobarUsuarioLogeado(idUsuario);
+        Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
+        if (idUsuarioLogeado == null) {
+            return "redirect:/login"; // Redirigir al login si no está logueado
+        }
 
         UsuarioData usuario = usuarioService.findById(idUsuario);
-        List<TareaData> tareas = tareaService.allTareasUsuario(idUsuario);
+        List<TareaData> tareas = tareaService.getTareasPaginadasUsuario(idUsuario, page, size);
+        int totalTareas = tareaService.getTotalTareasUsuario(idUsuario);
+        int totalPages = (int) Math.ceil((double) totalTareas / size);
+
         model.addAttribute("usuario", usuario);
         model.addAttribute("tareas", tareas);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
         return "listaTareas";
     }
 
     @GetMapping("/tareas/{id}/editar")
-    public String formEditaTarea(@PathVariable(value="id") Long idTarea, @ModelAttribute TareaData tareaData,
+    public String formEditaTarea(@PathVariable(value = "id") Long idTarea, @ModelAttribute TareaData tareaData,
                                  Model model, HttpSession session) {
 
         TareaData tarea = tareaService.findById(idTarea);
@@ -87,7 +113,7 @@ public class TareaController {
     }
 
     @PostMapping("/tareas/{id}/editar")
-    public String grabaTareaModificada(@PathVariable(value="id") Long idTarea, @ModelAttribute TareaData tareaData,
+    public String grabaTareaModificada(@PathVariable(value = "id") Long idTarea, @ModelAttribute TareaData tareaData,
                                        Model model, RedirectAttributes flash, HttpSession session) {
         TareaData tarea = tareaService.findById(idTarea);
         if (tarea == null) {
@@ -105,9 +131,7 @@ public class TareaController {
 
     @DeleteMapping("/tareas/{id}")
     @ResponseBody
-    // La anotación @ResponseBody sirve para que la cadena devuelta sea la resupuesta
-    // de la petición HTTP, en lugar de una plantilla thymeleaf
-    public String borrarTarea(@PathVariable(value="id") Long idTarea, RedirectAttributes flash, HttpSession session) {
+    public String borrarTarea(@PathVariable(value = "id") Long idTarea, RedirectAttributes flash, HttpSession session) {
         TareaData tarea = tareaService.findById(idTarea);
         if (tarea == null) {
             throw new TareaNotFoundException();
@@ -119,4 +143,3 @@ public class TareaController {
         return "";
     }
 }
-

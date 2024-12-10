@@ -29,6 +29,5 @@ Una vez lanzada la aplicación puedes abrir un navegador y probar la página de 
 
 - [http://localhost:8080/login](http://localhost:8080/login)
 
-Tablero del proyecto en Trello:
 
-- [https://trello.com/b/b9jXqpJ4/todolist-mads](https://trello.com/b/b9jXqpJ4/todolist-mads)
+[https://hub.docker.com/repository/docker/jfga2/mads-todolist-equipo2/general](https://hub.docker.com/repository/docker/jfga2/mads-todolist-equipo2/general)

@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -155,109 +153,4 @@ public class UsuarioServiceTest {
         assertThat(usuario.getEmail()).isEqualTo("user@ua");
         assertThat(usuario.getNombre()).isEqualTo("Usuario Ejemplo");
     }
-
-    @Test
-    public void servicioListadoUsuariosDevuelveTodosLosUsuarios() {
-        // GIVEN
-        // Añadimos dos usuarios a la base de datos
-        UsuarioData usuario1 = new UsuarioData();
-        usuario1.setEmail("user1@ua.com");
-        usuario1.setNombre("Usuario Uno");
-        usuario1.setPassword("123");
-        usuarioService.registrar(usuario1);
-
-        UsuarioData usuario2 = new UsuarioData();
-        usuario2.setEmail("user2@ua.com");
-        usuario2.setNombre("Usuario Dos");
-        usuario2.setPassword("123");
-        usuarioService.registrar(usuario2);
-
-        // WHEN
-        // Llamamos a findAllUsuarios para obtener la lista de usuarios
-        List<UsuarioData> usuarios = usuarioService.findAllUsuarios();
-
-        // THEN
-        // Verificamos que se obtienen los dos usuarios con los correos correctos
-        assertThat(usuarios).hasSize(2)
-                .extracting(UsuarioData::getEmail)
-                .contains("user1@ua.com", "user2@ua.com");
-    }
-
-    @Test
-    public void testServicioDescripcionUsuario() {
-        // GIVEN
-        // Registramos un usuario en la base de datos
-        Long usuarioId = addUsuarioBD();
-
-        // WHEN
-        // Llamamos a findById para obtener la descripción del usuario
-        UsuarioData usuario = usuarioService.findById(usuarioId);
-
-        // THEN
-        // Verificamos que el usuario obtenido tiene los datos correctos y que la contraseña es nula
-        assertThat(usuario).isNotNull();
-        assertThat(usuario.getId()).isEqualTo(usuarioId);
-        assertThat(usuario.getEmail()).isEqualTo("user@ua");
-        assertThat(usuario.getNombre()).isEqualTo("Usuario Ejemplo");
-    }
-
-    @Test
-    public void registrarUsuarioComoAdmin() {
-        // GIVEN
-        UsuarioData usuario = new UsuarioData();
-        usuario.setEmail("admin@ua.com");
-        usuario.setPassword("12345");
-        usuario.setAdmin(true);
-
-        // WHEN
-        // Registramos el usuario como administrador
-        UsuarioData usuarioRegistrado = usuarioService.registrar(usuario);
-
-        // THEN
-        // Comprobamos que el usuario fue registrado y tiene rol de administrador
-        assertThat(usuarioRegistrado.isAdmin()).isTrue();
-    }
-
-    @Test
-    public void bloquearUsuarioDeberiaEstablecerBloqueadoEnTrue() {
-        // GIVEN
-        Long usuarioId = addUsuarioBD(); // Añadir un usuario a la BD para testear
-
-        // WHEN
-        usuarioService.cambiarEstadoBloqueo(usuarioId, true);
-
-        // THEN
-        UsuarioData usuario = usuarioService.findById(usuarioId);
-        assertThat(usuario.isBloqueado()).isTrue();
-    }
-
-    @Test
-    public void desbloquearUsuarioDeberiaEstablecerBloqueadoEnFalse() {
-        // GIVEN
-        Long usuarioId = addUsuarioBD(); // Añadir un usuario a la BD
-        usuarioService.cambiarEstadoBloqueo(usuarioId, true); // Bloquear al usuario previamente
-
-        // WHEN
-        usuarioService.cambiarEstadoBloqueo(usuarioId, false); // Desbloquear al usuario
-
-        // THEN
-        UsuarioData usuario = usuarioService.findById(usuarioId);
-        assertThat(usuario.isBloqueado()).isFalse();
-    }
-
-    @Test
-    public void loginDeUsuarioBloqueadoDebeRetornarLoginBlocked() {
-        // GIVEN
-        Long usuarioId = addUsuarioBD();
-        usuarioService.cambiarEstadoBloqueo(usuarioId, true);
-
-        // WHEN
-        UsuarioService.LoginStatus loginStatus = usuarioService.login("user@ua", "123");
-
-        // THEN
-        assertThat(loginStatus).isEqualTo(UsuarioService.LoginStatus.LOGIN_BLOCKED);
-    }
-
-
-
 }

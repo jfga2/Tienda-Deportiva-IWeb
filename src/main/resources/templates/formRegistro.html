@@ -39,9 +39,10 @@
                                    placeholder="01-12-2019" th:field="*{fechaNacimiento}"/>
                         </div>
 
-                        <div class="form-group form-check" th:if="${!existeAdmin}">
-                            <input type="checkbox" class="form-check-input" id="admin" th:field="*{admin}">
-                            <label class="form-check-label" for="admin">Registrarse como Administrador</label>
+                        <!-- Mostrar el checkbox de administrador solo si no existe un administrador registrado -->
+                        <div class="form-group" th:if="${!existeAdmin}">
+                            <input type="checkbox" id="administrador" name="administrador" th:field="*{administrador}"/>
+                            <label for="administrador">Registrarse como Administrador</label>
                         </div>
 
                         <button type="submit" class="btn btn-primary">Registro</button>
@@ -51,6 +52,7 @@
             </form>
         </div>
     </div>
+
     <div class="row mt-3 justify-content-center">
         <div class="col-9">
             <div th:object="${registroData}">
@@ -65,7 +67,7 @@
     </div>
 </div>
 
-<div th:replace="fragments::javascript"/>
+<div th:replace="fragments::javascript"></div>
 
 </body>
 </html>
