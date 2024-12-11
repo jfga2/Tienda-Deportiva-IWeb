@@ -1,9 +1,8 @@
 package madstodolist.controller;
 
 import java.util.Arrays;
-import madstodolist.dto.TareaData;
+
 import madstodolist.dto.UsuarioData;
-import madstodolist.service.TareaService;
 import madstodolist.service.UsuarioService;
 import madstodolist.authentication.ManagerUserSession;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.mock.web.MockHttpSession;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
@@ -33,9 +31,6 @@ public class UsuarioWebTest {
 
     @MockBean
     private UsuarioService usuarioService;
-
-    @MockBean
-    private TareaService tareaService;
 
     @MockBean
     private ManagerUserSession managerUserSession;
@@ -94,7 +89,6 @@ public class UsuarioWebTest {
         when(usuarioService.findById(1L)).thenReturn(usuario);
 
         when(managerUserSession.usuarioLogeado()).thenReturn(1L);
-        when(tareaService.allTareasUsuario(1L)).thenReturn(Collections.emptyList());
 
         MockHttpSession session = new MockHttpSession();
         this.mockMvc.perform(post("/login")

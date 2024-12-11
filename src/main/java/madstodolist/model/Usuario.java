@@ -31,13 +31,6 @@ public class Usuario implements Serializable {
     private boolean administrador;
     private boolean bloqueado;
 
-    @OneToMany(mappedBy = "usuario")
-    private Set<Tarea> tareas = new HashSet<>();
-
-    // Nueva relación muchos-a-muchos con la entidad Equipo
-    @ManyToMany(mappedBy = "usuarios")
-    private Set<Equipo> equipos = new HashSet<>();
-
     public Usuario() {}
 
     public Usuario(String email) {
@@ -101,21 +94,6 @@ public class Usuario implements Serializable {
         this.bloqueado = bloqueado;
     }
 
-    public Set<Tarea> getTareas() {
-        return tareas;
-    }
-
-    public void addTarea(Tarea tarea) {
-        if (tareas.contains(tarea)) return;
-        tareas.add(tarea);
-        if (tarea.getUsuario() != this) {
-            tarea.setUsuario(this);
-        }
-    }
-
-    public Set<Equipo> getEquipos() {
-        return equipos;
-    }
 
 
     @Override
