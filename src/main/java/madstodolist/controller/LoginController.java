@@ -26,9 +26,20 @@ public class LoginController {
     ManagerUserSession managerUserSession;
 
     @GetMapping("/")
-    public String home(Model model) {
+    public String home() {
+        Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
+        if (idUsuarioLogeado != null) {
+            // Si el usuario está logueado, redirigir según su tipo
+            if (managerUserSession.esAdministrador()) {
+                return "redirect:/registrados";
+            } else {
+                return "redirect:/welcome";
+            }
+        }
+        // Si no está logueado, redirigir al formulario de login
         return "redirect:/login";
     }
+
 
     @GetMapping("/login")
     public String loginForm(Model model) {
@@ -38,7 +49,6 @@ public class LoginController {
 
     @PostMapping("/login")
     public String loginSubmit(@ModelAttribute LoginData loginData, Model model, HttpSession session) {
-
         // Llamada al servicio para comprobar si el login es correcto
         UsuarioService.LoginStatus loginStatus = usuarioService.login(loginData.geteMail(), loginData.getPassword());
 
@@ -53,8 +63,8 @@ public class LoginController {
                 return "redirect:/registrados";
             }
 
-            // Si no es administrador, redirigimos a la lista de tareas
-            return "redirect:/usuarios/" + usuario.getId() + "/tareas";
+            // Si no es administrador, redirigimos a la nueva vista de bienvenida
+            return "redirect:/welcome";
         } else if (loginStatus == UsuarioService.LoginStatus.USER_NOT_FOUND) {
             model.addAttribute("error", "No existe usuario");
         } else if (loginStatus == UsuarioService.LoginStatus.ERROR_PASSWORD) {
@@ -65,6 +75,7 @@ public class LoginController {
 
         return "formLogin";
     }
+
 
     @GetMapping("/registro")
     public String registroForm(Model model) {

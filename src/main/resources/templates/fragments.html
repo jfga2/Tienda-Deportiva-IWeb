@@ -10,23 +10,14 @@
 <div th:fragment="menu">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/about">ToDoList</a>
+            <a class="navbar-brand" href="/about">Acerca De</a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <!-- Enlace a "Tareas" solo si el usuario está logeado -->
-                    <li class="nav-item" th:if="${usuarioId != null}">
-                        <a class="nav-link" th:href="@{/usuarios/{id}/tareas(id=${usuarioId})}" th:classappend="${#request.requestURI.contains('/tareas')} ? 'active' : ''">Tareas</a>
-                    </li>
-                    <!-- Enlace a "Equipos" solo si el usuario está logeado -->
-                    <li class="nav-item" th:if="${usuarioId != null}">
-                        <a class="nav-link" th:href="@{/equipos}" th:classappend="${#request.requestURI.contains('/equipos')} ? 'active' : ''">Equipos</a>
-                    </li>
-                </ul>
+
 
                 <ul class="navbar-nav ml-auto">
                     <!-- Si el usuario está logeado, mostramos su nombre y el menú de cuenta -->

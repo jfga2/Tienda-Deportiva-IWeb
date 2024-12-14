@@ -46,4 +46,10 @@ public class HomeController {
             model.addAttribute("esAdministrador", false); // Si no hay usuario logueado, no es admin
         }
     }
+
+    @GetMapping("/welcome")
+    public String welcome(Model model) {
+        return "welcome";
+    }
+
 }
