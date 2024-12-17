@@ -9,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import java.util.List;
+
 @Controller
 public class HomeController {
 
@@ -23,7 +25,7 @@ public class HomeController {
         return "about";
     }
 
-    // Método para añadir atributos comunes a todas las vistas, como el usuario logueado y si es administrador
+    // Método para añadir atributos comunes (usuario logueado, administrador)
     @ModelAttribute
     public void addAttributes(Model model) {
         Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
@@ -34,22 +36,42 @@ public class HomeController {
             if (usuario != null) {
                 model.addAttribute("nombreUsuario", usuario.getNombre());
                 model.addAttribute("usuarioId", usuario.getId());
-                model.addAttribute("esAdministrador", esAdministrador); // Añadir el atributo "esAdministrador"
-            } else {
-                model.addAttribute("nombreUsuario", null);
-                model.addAttribute("usuarioId", null);
-                model.addAttribute("esAdministrador", false); // Si no hay usuario logueado, no es admin
+                model.addAttribute("esAdministrador", esAdministrador);
             }
         } else {
             model.addAttribute("nombreUsuario", null);
             model.addAttribute("usuarioId", null);
-            model.addAttribute("esAdministrador", false); // Si no hay usuario logueado, no es admin
+            model.addAttribute("esAdministrador", false);
         }
     }
 
     @GetMapping("/welcome")
     public String welcome(Model model) {
+        // Imágenes del carrusel
+        List<String> carouselImages = List.of(
+                "/images/image1.jpg",
+                "/images/image2.jpg",
+                "/images/image3.jpg"
+        );
+
+        // Imágenes de productos
+        List<String> productImages = List.of(
+                "/images/product1.jpg",
+                "/images/product2.jpg",
+                "/images/product3.jpg"
+        );
+
+        // Imágenes de "Descubre más"
+        List<String> discoverImages = List.of(
+                "/images/product4.jpg",
+                "/images/product5.jpg",
+                "/images/product6.jpg"
+        );
+
+        model.addAttribute("carouselImages", carouselImages);
+        model.addAttribute("productImages", productImages);
+        model.addAttribute("discoverImages", discoverImages);
+
         return "welcome";
     }
-
 }

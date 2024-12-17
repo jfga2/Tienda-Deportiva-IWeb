@@ -1,12 +1,73 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments :: head (titulo='Bienvenido')"></head>
+<style>
+    /* Efecto de Zoom */
+    .zoom-container {
+        overflow: hidden; /* Oculta el contenido desbordado */
+        position: relative;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .zoom-container img {
+        transition: transform 0.3s ease-in-out; /* Transición suave */
+    }
+
+    .zoom-container:hover img {
+        transform: scale(1.1); /* Aplica zoom */
+    }
+</style>
 <body>
+<!-- Menú -->
 <div th:replace="fragments::menu"></div>
+
 <div class="container mt-5">
-    <h1 class="text-center">Bienvenido a JaySport!</h1>
-    <p class="text-center">Explora nuestros productos y disfruta de nuestra tienda.</p>
+    <h1 class="text-center mb-4">Bienvenido a JaySport!</h1>
+
+    <!-- Carrusel de imágenes -->
+    <div id="carouselExample" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            <div th:each="image, iterStat : ${carouselImages}" class="carousel-item"
+                 th:classappend="${iterStat.index == 0} ? 'active'">
+                <img th:src="${image}" class="d-block w-100" alt="Carrusel">
+            </div>
+        </div>
+        <a class="carousel-control-prev" href="#carouselExample" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Anterior</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExample" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Siguiente</span>
+        </a>
+    </div>
+
+    <!-- Sección Lo mejor y más nuevo -->
+    <h2 class="text-center mt-5 mb-4">Lo mejor y más nuevo</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-4 mb-3" th:each="productImage : ${productImages}">
+            <div class="zoom-container">
+                <img th:src="${productImage}" class="img-fluid rounded shadow" alt="Producto">
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Descubre más -->
+    <h2 class="text-center mt-5 mb-4">Descubre más</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-4 mb-3" th:each="discoverImage : ${discoverImages}">
+            <div class="zoom-container">
+                <img th:src="${discoverImage}" class="img-fluid rounded shadow" alt="Descubre más">
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3 mt-5">
+    <div>© 2024 JaySport. Todos los derechos reservados.</div>
+</footer>
+
 <div th:replace="fragments::javascript"></div>
 </body>
 </html>
