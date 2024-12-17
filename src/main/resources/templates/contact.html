@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: head (titulo='Contacto')"></head>
+<style>
+    /* Estilo general para ocupar toda la página */
+    .contact-page {
+        min-height: 100vh; /* Ocupar toda la altura de la ventana */
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Contenido principal */
+    .contact-content {
+        flex: 1; /* Ocupar todo el espacio restante */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    /* Contenedor principal sin márgenes */
+    .contact-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 2rem;
+        background-color: white; /* Fondo blanco */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 0; /* Eliminar bordes redondeados */
+    }
+
+    /* Estilo del título */
+    h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    /* Información de contacto */
+    .contact-info p {
+        font-size: 1.1rem;
+        color: #555;
+    }
+
+    .contact-info a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .contact-info a:hover {
+        text-decoration: underline;
+    }
+
+    /* Google Maps con altura fija */
+    .map-container iframe {
+        width: 100%;
+        height: 500px;
+        border: none;
+    }
+</style>
+<body class="contact-page">
+
+<!-- Menú -->
+<div th:replace="fragments::menu"></div>
+
+<!-- Contenido principal -->
+<div class="contact-content">
+    <div class="contact-container">
+        <h1>Contáctanos</h1>
+        <p>Si tienes dudas o necesitas ayuda, ¡estamos aquí para ti!</p>
+
+        <!-- Información de contacto -->
+        <div class="contact-info mb-4">
+            <p><strong>Teléfono:</strong> +34 123 456 789</p>
+            <p>
+                <strong>Email:</strong>
+                <a href="mailto:soporte@jaysports.com">soporte@jaysports.com</a>
+            </p>
+            <p><strong>Dirección:</strong> Calle Deporte 456, Madrid, España</p>
+        </div>
+
+        <!-- Google Maps -->
+        <div class="map-container">
+            <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3048.555512315295!2d-3.7037907!3d40.4167754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDFsDI0JzAwLjAiTiAzwrA0MScwMC4wIlc!5e0!3m2!1ses!2ses!4v1667317216938!5m2!1ses!2ses"
+                    loading="lazy">
+            </iframe>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer bg-dark text-white text-center py-3">
+    <div class="footer-logo">JaySports</div>
+    <div class="footer-links">
+        <a href="#" class="text-white">Política de Privacidad</a>
+        <a href="#" class="text-white">Términos y Condiciones</a>
+        <a href="#" class="text-white">Contáctanos</a>
+    </div>
+    <div class="footer-copy">
+        © 2024 JaySports. Todos los derechos reservados.
+    </div>
+</footer>
+
+<div th:replace="fragments::javascript"></div>
+</body>
+</html>

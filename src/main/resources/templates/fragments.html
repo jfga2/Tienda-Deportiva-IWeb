@@ -10,29 +10,40 @@
 <div th:fragment="menu">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/about">Acerca De</a>
+            <!-- Enlaces visibles siempre -->
+            <a class="navbar-brand" href="/welcome">Welcome</a>
+            <a class="navbar-brand" href="/contact">Contacto</a>
+            <a class="navbar-brand" href="/about">Sobre Nosotros</a>
 
+            <!-- Enlaces visibles solo si el usuario está logueado -->
+            <a class="navbar-brand" href="#" th:if="${usuarioId != null}">Nuestros Productos</a>
+            <!-- Aquí se usa la ruta con el id del usuario -->
+            <a class="navbar-brand" th:href="@{'/registrados/' + ${usuarioId}}" th:if="${usuarioId != null}">Mis Datos</a>
+
+            <!-- Enlace "Mis Usuarios" visible solo si es administrador -->
+            <a class="navbar-brand" href="/registrados" th:if="${esAdministrador}">Mis Usuarios</a>
+
+            <!-- Botón de menú desplegable -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-
-
                 <ul class="navbar-nav ml-auto">
-                    <!-- Si el usuario está logeado, mostramos su nombre y el menú de cuenta -->
+                    <!-- Si el usuario está logueado -->
                     <li class="nav-item dropdown" th:if="${usuarioId != null}">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <span th:text="${nombreUsuario}">Usuario</span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Cuenta</a></li>
+                            <!-- Redirige a los datos del usuario -->
+                            <li><a class="dropdown-item" th:href="@{'/registrados/' + ${usuarioId}}">Mis Datos</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/logout">Cerrar sesión</a></li>
                         </ul>
                     </li>
 
-                    <!-- Si el usuario NO está logeado, mostramos los enlaces a Login y Registro -->
+                    <!-- Si el usuario NO está logueado -->
                     <li class="nav-item" th:if="${usuarioId == null}">
                         <a class="nav-link" href="/login">Login</a>
                     </li>
@@ -46,7 +57,7 @@
 </div>
 
 <div th:fragment="javascript">
-    <!-- Usa 'src' en vez de 'th:src' para URLs externas -->
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>

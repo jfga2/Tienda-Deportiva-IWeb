@@ -1,31 +1,110 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: head (titulo='Sobre Nosotros')"></head>
+<style>
+    /* Estilo global para el fondo blanco y ajuste del contenido */
+    body {
+        background-color: #fff; /* Fondo blanco */
+        margin: 0; /* Eliminar márgenes */
+        padding: 0;
+    }
 
-<head th:replace="fragments :: head (titulo='Acerca de')"></head>
+    .aboutus-container {
+        width: 100%; /* Ocupa todo el ancho */
+        max-width: none; /* Quitar el límite de anchura */
+        padding: 2rem; /* Añadir espacio interno */
+    }
 
+    .aboutus-logo {
+        width: 150px;
+        height: auto;
+        margin-bottom: 1rem;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2 {
+        font-weight: bold;
+        color: #333;
+    }
+
+    p, li {
+        color: #555;
+        line-height: 1.6;
+    }
+
+    ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    ul li::before {
+        content: "⚡"; /* Icono por defecto */
+        margin-right: 0.5rem;
+    }
+</style>
 <body>
-
+<!-- Menú -->
 <div th:replace="fragments::menu"></div>
 
-
-<div class="container-fluid">
-    <div class="container-fluid">
-        <h1>JaySports</h1>
-        <ul>
-            <li>Desarrollada por:</li>
-            <ul>
-                <li>Youness Zahid Chrif</li>
-                <li>Ali El Ouali Lakssiouar</li>
-                <li>Juan Fernando Gaviria Álvarez</li>
-            </ul>
-            <li>Versión 1.3.0</li>
-            <li>Fecha de release: 14/12/2024</li>
-        </ul>
+<!-- Contenido principal -->
+<div class="aboutus-container mx-auto">
+    <!-- Logo y Título -->
+    <div class="text-center mb-4">
+        <img th:src="@{/images/image1.jpg}" alt="Logo de JaySport" class="aboutus-logo">
+        <h1>Sobre Nosotros</h1>
+        <p class="text-muted">Descubre más acerca de nuestra misión, visión y valores en JaySport.</p>
     </div>
 
+    <!-- Nuestra Historia -->
+    <div class="mb-4">
+        <h2>Nuestra Historia</h2>
+        <p>
+            Fundada en 2023, <strong>JaySport</strong> comenzó como una pequeña tienda online con
+            la misión de ofrecer ropa deportiva de alta calidad a precios accesibles. Gracias al
+            apoyo de nuestros clientes, hemos crecido hasta convertirnos en un referente en
+            la venta de artículos deportivos.
+        </p>
+    </div>
+
+    <!-- Nuestra Misión -->
+    <div class="mb-4">
+        <h2>Nuestra Misión</h2>
+        <p>
+            En <strong>JaySport</strong>, nos dedicamos a ofrecer productos que combinan rendimiento,
+            comodidad y sostenibilidad. Queremos que cada cliente alcance su mejor versión,
+            apoyándolos en cada paso de su viaje deportivo.
+        </p>
+    </div>
+
+    <!-- Nuestra Visión -->
+    <div class="mb-4">
+        <h2>Nuestra Visión</h2>
+        <p>
+            Ser líderes en el mercado de ropa y accesorios deportivos, innovando con tecnologías
+            sostenibles y comprometidos con la excelencia en cada producto.
+        </p>
+    </div>
+
+    <!-- Nuestros Valores -->
+    <div class="mb-4">
+        <h2>Nuestros Valores</h2>
+        <ul>
+            <li>Compromiso con la calidad</li>
+            <li>Trabajo en equipo</li>
+            <li>Sostenibilidad y respeto por el medio ambiente</li>
+            <li>Innovación constante</li>
+            <li>Atención al cliente excepcional</li>
+        </ul>
+    </div>
 </div>
 
-<div th:replace="fragments::javascript"/>
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3 mt-5">
+    <div>© 2024 JaySport. Todos los derechos reservados.</div>
+</footer>
 
+<!-- Scripts -->
+<div th:replace="fragments::javascript"></div>
 </body>
 </html>

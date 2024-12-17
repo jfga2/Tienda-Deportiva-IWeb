@@ -74,4 +74,10 @@ public class HomeController {
 
         return "welcome";
     }
+
+    @GetMapping("/contact")
+    public String contact() {
+        return "contact";
+    }
+
 }

@@ -34,12 +34,15 @@ public class UsuarioController {
             if (usuario != null) {
                 model.addAttribute("nombreUsuario", usuario.getNombre());
                 model.addAttribute("usuarioId", usuario.getId());
+                model.addAttribute("esAdministrador", managerUserSession.esAdministrador()); // Nuevo atributo
             }
         } else {
             model.addAttribute("nombreUsuario", null);
             model.addAttribute("usuarioId", null);
+            model.addAttribute("esAdministrador", false); // Valor por defecto
         }
     }
+
 
     // Método que maneja la ruta /registrados y lista los usuarios
     @GetMapping("/registrados")
@@ -65,22 +68,25 @@ public class UsuarioController {
     public String descripcionUsuario(@PathVariable Long id, Model model) {
         Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
         if (idUsuarioLogeado == null) {
-            return "redirect:/login";
+            return "redirect:/login"; // Redirigir si no está logueado
         }
 
-        // Comprobamos si el usuario es administrador
-        if (!managerUserSession.esAdministrador()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No tiene permisos para acceder a esta página.");
+        // Comprobamos si el usuario es administrador o si el usuario quiere ver su propia información
+        if (!managerUserSession.esAdministrador() && !idUsuarioLogeado.equals(id)) {
+            // Si no es admin y no coincide su ID, denegamos el acceso
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No tiene permisos para ver esta información.");
         }
 
-        // Mostramos la descripción del usuario
+        // Buscar el usuario y agregarlo al modelo
         UsuarioData usuario = usuarioService.findById(id);
         if (usuario == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado");
         }
+
         model.addAttribute("usuario", usuario);
         return "usuarioDescripcion";
     }
+
 
     // Método para bloquear o desbloquear un usuario
     @PostMapping("/registrados/{id}/bloquear")
