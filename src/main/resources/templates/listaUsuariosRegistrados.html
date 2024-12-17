@@ -3,34 +3,73 @@
 <head th:replace="fragments :: head (titulo='Usuarios Registrados')"></head>
 <body>
 
+<!-- Menú -->
 <div th:replace="fragments::menu"></div>
 
-<div class="container-fluid">
-    <div class="row mt-3">
+<div class="container-fluid mt-4">
+    <!-- Encabezado de la página -->
+    <div class="row mb-3">
         <div class="col">
             <h2>Listado de Usuarios</h2>
-            <table class="table table-striped">
-                <thead>
+        </div>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <div class="row">
+        <div class="col">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
                 <tr>
                     <th>ID</th>
                     <th>Email</th>
                     <th>Descripción</th>
+                    <th>Editar</th>
+                    <th>Eliminar</th>
                     <th>Bloquear/Desbloquear</th>
                 </tr>
                 </thead>
                 <tbody>
+                <!-- Iterar sobre la lista de usuarios -->
                 <tr th:each="usuario : ${usuarios}">
+                    <!-- Columna ID -->
                     <td th:text="${usuario.id}"></td>
+
+                    <!-- Columna Email -->
                     <td th:text="${usuario.email}"></td>
+
+                    <!-- Botón Ver Descripción -->
                     <td>
-                        <a class="btn btn-info" th:href="@{/registrados/{id}(id=${usuario.id})}">Ver Descripción</a>
+                        <a class="btn btn-info btn-sm" th:href="@{/registrados/{id}(id=${usuario.id})}">
+                            <i class="fas fa-eye"></i> Ver
+                        </a>
                     </td>
+
+                    <!-- Botón Editar Usuario -->
+                    <td>
+                        <a class="btn btn-warning btn-sm" th:href="@{/registrados/{id}/editar(id=${usuario.id})}">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                    </td>
+
+                    <!-- Botón Eliminar Usuario -->
+                    <td>
+                        <form th:action="@{/registrados/{id}/eliminar(id=${usuario.id})}" method="post"
+                              onsubmit="return confirm('¿Seguro que quieres eliminar este usuario?');">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    </td>
+
+                    <!-- Botón Bloquear/Desbloquear -->
                     <td>
                         <form th:action="@{/registrados/{id}/bloquear(id=${usuario.id})}" method="post">
                             <input type="hidden" name="accion" th:value="${usuario.bloqueado ? 'desbloquear' : 'bloquear'}"/>
-                            <button type="submit" class="btn"
-                                    th:classappend="${usuario.bloqueado ? 'btn-success' : 'btn-danger'}"
-                                    th:text="${usuario.bloqueado ? 'Desbloquear' : 'Bloquear'}"></button>
+                            <button type="submit" class="btn btn-sm"
+                                    th:classappend="${usuario.bloqueado ? 'btn-success' : 'btn-danger'}">
+                                <i class="fas" th:classappend="${usuario.bloqueado ? 'fa-unlock' : 'fa-lock'}"></i>
+                                <span th:text="${usuario.bloqueado ? 'Desbloquear' : 'Bloquear'}"></span>
+                            </button>
                         </form>
                     </td>
                 </tr>
@@ -38,8 +77,41 @@
             </table>
         </div>
     </div>
+
+    <!-- Paginación -->
+    <div class="row mt-3">
+        <div class="col">
+            <nav aria-label="Paginación">
+                <ul class="pagination justify-content-center">
+                    <!-- Botón Anterior -->
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link" th:href="@{/registrados(page=${currentPage - 1}, size=${pageSize})}" aria-label="Anterior">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Anterior</span>
+                        </a>
+                    </li>
+
+                    <!-- Botones de Página -->
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/registrados(page=${i}, size=${pageSize})}" th:text="${i + 1}"></a>
+                    </li>
+
+                    <!-- Botón Siguiente -->
+                    <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{/registrados(page=${currentPage + 1}, size=${pageSize})}" aria-label="Siguiente">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Siguiente</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
 </div>
 
+<!-- Scripts -->
 <div th:replace="fragments::javascript"></div>
+
 </body>
 </html>

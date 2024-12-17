@@ -36,7 +36,11 @@
                         <div class="form-group">
                             <label for="fechaNacimiento">Fecha de nacimiento</label>
                             <input id="fechaNacimiento" class="form-control" name="fechaNacimiento"
-                                   placeholder="01-12-2019" th:field="*{fechaNacimiento}"/>
+                                   placeholder="dd-MM-yyyy" th:field="*{fechaNacimiento}" type="text" required/>
+                            <!-- Mostrar error si la fecha es inválida -->
+                            <div th:if="${#fields.hasErrors('fechaNacimiento')}" class="alert alert-danger">
+                                Fecha de nacimiento inválida. Usa el formato dd-MM-yyyy.
+                            </div>
                         </div>
 
                         <!-- Mostrar el checkbox de administrador solo si no existe un administrador registrado -->
