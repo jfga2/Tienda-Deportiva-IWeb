@@ -1,5 +1,7 @@
 package madstodolist.dto;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -10,6 +12,7 @@ public class UsuarioData {
     private String email;
     private String nombre;
     private String password;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date fechaNacimiento;
     private boolean administrador;  // Campo para administrador
     private boolean bloqueado;  // Nuevo campo para controlar si el usuario está bloqueado

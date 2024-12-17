@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo='Editar Usuario')"></head>
+
+<body>
+<div class="container-fluid">
+
+    <!-- Título de la página -->
+    <div class="row justify-content-center mb-3">
+        <div class="col-auto">
+            <h2>Editar Usuario</h2>
+        </div>
+    </div>
+
+    <!-- Formulario de edición -->
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <form method="post" th:action="@{/registrados/{id}/editar(id=${usuarioData.id})}" th:object="${usuarioData}">
+                <div class="row justify-content-center">
+                    <div class="col-6">
+
+                        <!-- Campo de correo electrónico -->
+                        <div class="form-group">
+                            <label for="email">Correo electrónico</label>
+                            <input id="email" class="form-control" name="email" placeholder="Correo electrónico"
+                                   type="text" th:field="*{email}" required/>
+                        </div>
+
+                        <!-- Campo de nombre -->
+                        <div class="form-group">
+                            <label for="nombre">Nombre</label>
+                            <input id="nombre" class="form-control" name="nombre" placeholder="Nombre"
+                                   type="text" th:field="*{nombre}" required/>
+                        </div>
+
+                        <!-- Campo de contraseña -->
+                        <div class="form-group">
+                            <label for="password">Contraseña</label>
+                            <input id="password" class="form-control" name="password" placeholder="Contraseña"
+                                   type="password" th:field="*{password}" required/>
+                        </div>
+
+                        <!-- Campo de fecha de nacimiento -->
+                        <div class="form-group">
+                            <label for="fechaNacimiento">Fecha de nacimiento</label>
+                            <input id="fechaNacimiento"
+                                   class="form-control"
+                                   name="fechaNacimiento"
+                                   placeholder="dd-MM-yyyy"
+                                   type="text"
+                                   th:field="*{fechaNacimiento}"
+                                   pattern="\d{2}-\d{2}-\d{4}" />
+                        </div>
+
+
+
+
+                        <!-- Botones de acción -->
+                        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                        <a class="btn btn-secondary" href="/registrados">Cancelar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mostrar errores de validación -->
+    <div class="row mt-3 justify-content-center">
+        <div class="col-9">
+            <div th:object="${usuarioData}">
+                <ul th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                    <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Scripts -->
+<div th:replace="fragments::javascript"></div>
+
+</body>
+</html>

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 public class LoginController {
@@ -26,7 +27,7 @@ public class LoginController {
     ManagerUserSession managerUserSession;
 
     @GetMapping("/")
-    public String home() {
+    public String home(Model model) {
         Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
         if (idUsuarioLogeado != null) {
             // Si el usuario está logueado, redirigir según su tipo
@@ -36,8 +37,32 @@ public class LoginController {
                 return "redirect:/welcome";
             }
         }
-        // Si no está logueado, redirigir al formulario de login
-        return "redirect:/login";
+        // Imágenes del carrusel
+        List<String> carouselImages = List.of(
+                "/images/image1.jpg",
+                "/images/image2.jpg",
+                "/images/image3.jpg"
+        );
+
+        // Imágenes de productos
+        List<String> productImages = List.of(
+                "/images/product1.jpg",
+                "/images/product2.jpg",
+                "/images/product3.jpg"
+        );
+
+        // Imágenes de "Descubre más"
+        List<String> discoverImages = List.of(
+                "/images/product4.jpg",
+                "/images/product5.jpg",
+                "/images/product6.jpg"
+        );
+
+        model.addAttribute("carouselImages", carouselImages);
+        model.addAttribute("productImages", productImages);
+        model.addAttribute("discoverImages", discoverImages);
+
+        return "welcome";
     }
 
 
