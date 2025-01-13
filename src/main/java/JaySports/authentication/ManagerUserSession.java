@@ -1,5 +1,7 @@
 package JaySports.authentication;
 
+import JaySports.model.Usuario;
+import JaySports.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +13,9 @@ public class ManagerUserSession {
     @Autowired
     HttpSession session;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     /**
      * Logear un usuario, guardando su ID, nombre y si es administrador en la sesión.
      *
@@ -20,7 +25,7 @@ public class ManagerUserSession {
      */
     public void logearUsuario(Long idUsuario, String nombreUsuario, boolean esAdministrador) {
         session.setAttribute("idUsuarioLogeado", idUsuario);
-        session.setAttribute("nombreUsuarioLogeado", nombreUsuario); // Guardar el nombre del usuario
+        session.setAttribute("nombreUsuarioLogeado", nombreUsuario);
         session.setAttribute("esAdministrador", esAdministrador);
     }
 
@@ -59,5 +64,18 @@ public class ManagerUserSession {
         session.setAttribute("idUsuarioLogeado", null);
         session.setAttribute("nombreUsuarioLogeado", null);
         session.setAttribute("esAdministrador", null);
+    }
+
+    /**
+     * Obtener el usuario logueado utilizando su ID almacenado en la sesión.
+     *
+     * @return Usuario logueado o null si no está logueado.
+     */
+    public Usuario obtenerUsuarioLogeado() {
+        Long idUsuario = usuarioLogeado();
+        if (idUsuario == null) {
+            return null;
+        }
+        return usuarioService.obtenerUsuarioPorId(idUsuario);
     }
 }

@@ -31,8 +31,11 @@
             <p>
                 <strong>Stock disponible:</strong> <span th:text="${producto.stock}">10</span>
             </p>
-            <!-- Botón añadir al carrito (aún sin funcionalidad) -->
-            <button class="btn btn-primary mt-3">Añadir al carrito</button>
+
+            <!-- Formulario para añadir al carrito -->
+            <form th:action="@{'/carrito/agregar/' + ${producto.id}}" method="post">
+                <button type="submit" class="btn btn-primary mt-3">Añadir al carrito</button>
+            </form>
         </div>
     </div>
 </div>

@@ -154,4 +154,15 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
         return usuario != null && usuario.isAdministrador();
     }
+
+    /**
+     * Obtener un usuario por su ID.
+     *
+     * @param id ID del usuario.
+     * @return Usuario encontrado o lanza una excepción si no existe.
+     */
+    public Usuario obtenerUsuarioPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
+    }
 }

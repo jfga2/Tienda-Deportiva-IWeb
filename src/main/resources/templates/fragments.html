@@ -26,11 +26,12 @@
             <a class="navbar-brand" href="/crearProducto" th:if="${esAdministrador}">Crear Producto</a>
 
             <!-- Icono de carrito de la compra (solo si el usuario está logueado) -->
-            <a class="navbar-brand cart-icon" href="#" th:if="${usuarioId != null}">
+            <a class="navbar-brand cart-icon" th:href="@{/carrito}" th:if="${usuarioId != null}">
                 <i class="fas fa-shopping-cart"></i>
-                <!-- Contador del carrito (estático en este caso) -->
-                <span class="cart-counter">0</span>
+                <!-- Contador del carrito dinámico -->
+                <span class="cart-counter" th:text="${cantidadProductosEnCarrito}"></span>
             </a>
+
 
             <!-- Botón de menú desplegable -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
