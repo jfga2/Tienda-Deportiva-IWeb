@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head (titulo)">
+    <meta charset="UTF-8">
+    <title>Crear Producto</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // Función para redirigir después de 5 segundos si hay un mensaje de éxito
+        function handleSuccessRedirect() {
+            const successMessage = document.getElementById("successMessage");
+            if (successMessage) {
+                setTimeout(() => {
+                    window.location.href = redirectUrl;
+                }, 3000);
+            }
+        }
+    </script>
+</head>
+<body onload="handleSuccessRedirect()">
+<div th:replace="fragments::menu"></div>
+
+<div class="container mt-4">
+    <h1>Crear Producto</h1>
+    <form th:action="@{/crearProducto}" th:object="${productoData}" method="post" class="form">
+        <!-- Campo Nombre -->
+        <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" type="text" th:field="*{nombre}" placeholder="Nombre del producto" class="form-control" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+        </div>
+
+        <!-- Campo Categoría -->
+        <div class="form-group">
+            <label for="categoria">Categoría</label>
+            <input id="categoria" type="text" th:field="*{categoria}" placeholder="Categoría" class="form-control" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('categoria')}" th:errors="*{categoria}"></div>
+        </div>
+
+        <!-- Campo Precio -->
+        <div class="form-group">
+            <label for="precio">Precio (€)</label>
+            <input id="precio" type="number" th:field="*{precio}" placeholder="Precio" class="form-control" required min="0.01" step="0.01">
+            <div class="text-danger" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></div>
+        </div>
+
+        <!-- Campo Descripción -->
+        <div class="form-group">
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" th:field="*{descripcion}" placeholder="Descripción del producto" class="form-control" required></textarea>
+            <div class="text-danger" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></div>
+        </div>
+
+        <!-- Campo para seleccionar imagen -->
+        <div class="form-group">
+            <label for="foto">Imagen</label>
+            <select id="foto" th:field="*{foto}" class="form-control" required>
+                <option value="">Selecciona una imagen</option>
+                <option value="bolsa_de_mano_skepta.jpg">bolsa_de_mano_skepta.jpg</option>
+                <option value="bolso_puma_coperni.jpg">bolso_puma_coperni.jpg</option>
+                <option value="botas_futbol_ultra_5.jpg">botas_futbol_ultra_5.jpg</option>
+                <option value="botas_puma_evolve_niño.jpg">botas_puma_evolve_niño.jpg</option>
+                <option value="camiseta_ac_milan.jpg">camiseta_ac_milan.jpg</option>
+                <option value="camiseta_manchester_city.jpg">camiseta_manchester_city.jpg</option>
+                <option value="camiseta_puma_rocket_league.jpg">camiseta_puma_rocket_league.jpg</option>
+                <option value="camiseta_pumaSquad_negra.jpg">camiseta_pumaSquad_negra.jpg</option>
+                <option value="camiseta_skepta_blanca.jpg">camiseta_skepta_blanca.jpg</option>
+                <option value="chaqueta_minicats_niños.jpg">chaqueta_minicats_niños.jpg</option>
+                <option value="chaqueta_reversible_negra.jpg">chaqueta_reversible_negra.jpg</option>
+                <option value="chaqueta_skepta_negra.jpg">chaqueta_skepta_negra.jpg</option>
+                <option value="chaqueta_verde_puma.jpg">chaqueta_verde_puma.jpg</option>
+                <option value="gorro_comic_rosa.jpg">gorro_comic_rosa.jpg</option>
+                <option value="gorro_de_baloncesto.jpg">gorro_de_baloncesto.jpg</option>
+                <option value="jersey_puma_coperni.jpg">jersey_puma_coperni.jpg</option>
+                <option value="pantalon_chandal_negro.jpg">pantalon_chandal_negro.jpg</option>
+                <option value="sombrero_boonie_negro.jpg">sombrero_boonie_negro.jpg</option>
+                <option value="sudadera_puma_gris.jpg">sudadera_puma_gris.jpg</option>
+                <option value="sudadera_pumaSquad_rosa.jpg">sudadera_pumaSquad_rosa.jpg</option>
+                <option value="sujetador_puma_blanco.jpg">sujetador_puma_blanco.jpg</option>
+                <option value="vestido_largo_coperni.jpg">vestido_largo_coperni.jpg</option>
+                <option value="zapatillas_arizona_azules.jpg">zapatillas_arizona_azules.jpg</option>
+                <option value="zapatillas_arizona_verdes.jpg">zapatillas_arizona_verdes.jpg</option>
+                <option value="zapatillas_beige_nike.jpg">zapatillas_beige_nike.jpg</option>
+                <option value="zapatillas_inhale_unisex.jpg">zapatillas_inhale_unisex.jpg</option>
+                <option value="zapatillas_negras_nike.jpg">zapatillas_negras_nike.jpg</option>
+                <option value="zapatillas_nike_air_max_plus.jpg">zapatillas_nike_air_max_plus.jpg</option>
+                <option value="zapatillas_nike_retro_azul_claro.jpg">zapatillas_nike_retro_azul_claro.jpg</option>
+                <option value="zapatillas_puma_coperni.jpg">zapatillas_puma_coperni.jpg</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('foto')}" th:errors="*{foto}"></div>
+        </div>
+
+        <!-- Campo Stock -->
+        <div class="form-group">
+            <label for="stock">Stock</label>
+            <input id="stock" type="number" th:field="*{stock}" placeholder="Cantidad disponible" class="form-control" required min="1">
+            <div class="text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></div>
+        </div>
+
+        <!-- Mensajes -->
+        <div class="alert alert-success" id="successMessage" th:if="${successMessage}" th:text="${successMessage}" data-redirect-url="${redirectUrl}"></div>
+        <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+        <!-- Botón Crear -->
+        <button type="submit" class="btn btn-primary mt-3">Crear Producto</button>
+    </form>
+</div>
+
+<div th:fragment="javascript" th:replace="fragments.html :: javascript"></div>
+</body>
+</html>
