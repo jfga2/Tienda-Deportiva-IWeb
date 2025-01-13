@@ -18,7 +18,23 @@
                 <img th:src="@{/images/{foto}(foto=${producto.foto})}" class="card-img-top" th:alt="${producto.nombre}">
                 <div class="card-body text-center">
                     <h5 class="card-title" th:text="${producto.nombre}">Nombre del Producto</h5>
+                    <!-- Botón para ver más información -->
                     <button class="btn btn-primary">Ver más info</button>
+
+                    <!-- Botón de editar producto, visible solo para administradores -->
+                    <button class="btn btn-warning mt-2" th:if="${esAdministrador}"
+                            th:onclick="'window.location.href=\'/editarProducto/' + ${producto.id} + '\';'">
+                        Editar producto
+                    </button>
+
+                    <!-- Botón de eliminar producto, visible solo para administradores -->
+                    <form th:if="${esAdministrador}" th:action="@{'/eliminarProducto/' + ${producto.id}}" method="post"
+                          class="mt-2">
+                        <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');">
+                            Eliminar producto
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
