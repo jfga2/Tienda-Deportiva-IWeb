@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head (titulo)">
+    <meta charset="UTF-8">
+    <title th:text="'Detalles del Producto: ' + ${producto.nombre}">Detalles del Producto</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div th:replace="fragments::menu"></div>
+
+<div class="container mt-4">
+    <h1 class="text-center" th:text="${producto.nombre}">Nombre del Producto</h1>
+    <div class="row">
+        <!-- Imagen del producto -->
+        <div class="col-md-6">
+            <img th:src="@{/images/{foto}(foto=${producto.foto})}" class="img-fluid rounded" th:alt="${producto.nombre}">
+        </div>
+        <!-- Detalles del producto -->
+        <div class="col-md-6">
+            <h2>Detalles del Producto</h2>
+            <p>
+                <strong>Precio:</strong> <span th:text="${producto.precio} + ' €'">64,99 €</span>
+            </p>
+            <p>
+                <strong>Categoría:</strong> <span th:text="${producto.categoria}">Categoría</span>
+            </p>
+            <p>
+                <strong>Descripción:</strong> <span th:text="${producto.descripcion}">Descripción del producto</span>
+            </p>
+            <p>
+                <strong>Stock disponible:</strong> <span th:text="${producto.stock}">10</span>
+            </p>
+            <!-- Botón añadir al carrito (aún sin funcionalidad) -->
+            <button class="btn btn-primary mt-3">Añadir al carrito</button>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="javascript" th:replace="fragments.html :: javascript"></div>
+</body>
+</html>

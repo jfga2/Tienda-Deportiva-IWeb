@@ -18,7 +18,7 @@
             <a class="navbar-brand" href="/about">Sobre Nosotros</a>
 
             <!-- Enlaces visibles solo si el usuario está logueado -->
-            <a class="navbar-brand" href="/productos" th:if="${usuarioId != null}">Nuestros Productos</a>
+            <a class="navbar-brand" href="/productos">Nuestros Productos</a>
             <a class="navbar-brand" th:href="@{'/registrados/' + ${usuarioId}}" th:if="${usuarioId != null}">Mis Datos</a>
 
             <!-- Enlace "Mis Usuarios" visible solo si es administrador -->

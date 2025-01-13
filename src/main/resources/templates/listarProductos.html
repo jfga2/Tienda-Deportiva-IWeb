@@ -19,7 +19,7 @@
                 <div class="card-body text-center">
                     <h5 class="card-title" th:text="${producto.nombre}">Nombre del Producto</h5>
                     <!-- Botón para ver más información -->
-                    <button class="btn btn-primary">Ver más info</button>
+                    <a class="btn btn-primary mt-2" th:href="@{'/detalleProducto/' + ${producto.id}}">Ver más info</a>
 
                     <!-- Botón de editar producto, visible solo para administradores -->
                     <button class="btn btn-warning mt-2" th:if="${esAdministrador}"

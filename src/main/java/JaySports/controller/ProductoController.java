@@ -211,4 +211,25 @@ public class ProductoController {
 
         return "redirect:/productos";
     }
+
+    /**
+     * Mostrar los detalles de un producto específico.
+     *
+     * @param id    ID del producto a mostrar.
+     * @param model Modelo para la vista.
+     * @return La vista detalleProducto.html.
+     */
+    @GetMapping("/detalleProducto/{id}")
+    public String mostrarDetalleProducto(@PathVariable Long id, Model model) {
+        // Obtener el producto desde la base de datos
+        Producto producto = productoService.obtenerProductoPorId(id);
+
+        // Pasar el producto al modelo
+        model.addAttribute("producto", producto);
+        model.addAttribute("usuarioId", managerUserSession.usuarioLogeado());
+        model.addAttribute("esAdministrador", managerUserSession.esAdministrador());
+        model.addAttribute("nombreUsuario", managerUserSession.obtenerNombreUsuario());
+
+        return "detalleProducto"; // Renderiza la vista detalleProducto.html
+    }
 }
