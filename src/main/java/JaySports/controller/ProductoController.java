@@ -1,7 +1,10 @@
 package JaySports.controller;
 
 import JaySports.dto.ProductoData;
+import JaySports.model.Comentario;
 import JaySports.model.Producto;
+import JaySports.model.Usuario;
+import JaySports.service.ComentarioService;
 import JaySports.service.ProductoService;
 import JaySports.authentication.ManagerUserSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,9 @@ public class ProductoController {
 
     @Autowired
     private ManagerUserSession managerUserSession;
+
+    @Autowired
+    private ComentarioService comentarioService;
 
     /**
      * Mostrar la vista de creación de productos.
@@ -224,12 +230,49 @@ public class ProductoController {
         // Obtener el producto desde la base de datos
         Producto producto = productoService.obtenerProductoPorId(id);
 
+        // Obtener los comentarios visibles del producto
+        List<Comentario> comentarios = comentarioService.obtenerComentariosVisibles(producto);
+
         // Pasar el producto al modelo
         model.addAttribute("producto", producto);
+        model.addAttribute("comentarios", comentarios); // Lista de comentarios visibles
         model.addAttribute("usuarioId", managerUserSession.usuarioLogeado());
         model.addAttribute("esAdministrador", managerUserSession.esAdministrador());
         model.addAttribute("nombreUsuario", managerUserSession.obtenerNombreUsuario());
 
         return "detalleProducto"; // Renderiza la vista detalleProducto.html
     }
+
+    /**
+     * Mostrar la vista de creación de comentarios.
+     *
+     * @param id    ID del producto al que se añadirá el comentario.
+     * @param model Modelo para la vista.
+     * @return La vista crearComentario.html.
+     */
+
+    @PostMapping("/detalleProducto/{id}/comentario")
+    public String agregarComentario(
+            @PathVariable Long id,
+            @RequestParam String contenido,
+            Model model
+    ) {
+        // Verificar si el usuario está logueado
+        if (managerUserSession.usuarioLogeado() == null) {
+            return "redirect:/login"; // Redirigir al login si no está logueado
+        }
+
+        // Obtener el producto
+        Producto producto = productoService.obtenerProductoPorId(id);
+
+        // Obtener el usuario logueado
+        Usuario usuario = managerUserSession.obtenerUsuarioLogeado();
+
+        // Crear el comentario
+        comentarioService.crearComentario(producto, usuario, contenido);
+
+        // Redirigir a la misma página de detalles del producto
+        return "redirect:/detalleProducto/" + id;
+    }
+
 }
