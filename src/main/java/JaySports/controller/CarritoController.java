@@ -8,11 +8,15 @@ import JaySports.service.CarritoService;
 import JaySports.authentication.ManagerUserSession;
 import JaySports.service.ProductoCarritoService;
 import JaySports.service.ProductoService;
+import JaySports.service.PedidoService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
 
@@ -30,7 +34,13 @@ public class CarritoController {
     private ProductoService productoService;
 
     @Autowired
+    private PedidoService pedidoService;
+
+    @Autowired
     private ManagerUserSession managerUserSession;
+
+    private static final Logger logger = LoggerFactory.getLogger(CarritoController.class);
+
 
     /**
      * Mostrar la vista del carrito de compras.
@@ -136,5 +146,31 @@ public class CarritoController {
         }
 
         return "redirect:/carrito";
+    }
+
+    @PostMapping("/finalizar")
+    public String finalizarCompra(Model model) {
+        logger.debug("Iniciando finalizarCompra");
+
+        Usuario usuario = managerUserSession.obtenerUsuarioLogeado();
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            Carrito carrito = carritoService.obtenerCarritoPorUsuario(usuario);
+            if (carrito.getProductosCarrito().isEmpty()) {
+                model.addAttribute("error", "El carrito está vacío");
+                return "redirect:/carrito";
+            }
+
+            logger.debug("Ha entrado");
+
+            pedidoService.crearPedidoDesdeCarrito(usuario, carrito);
+            return "redirect:/pedidos";
+        } catch (IllegalStateException e) {
+            model.addAttribute("error", e.getMessage());
+            return "redirect:/carrito";
+        }
     }
 }

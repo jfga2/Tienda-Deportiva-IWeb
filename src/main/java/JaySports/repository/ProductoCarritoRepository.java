@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ProductoCarritoRepository extends JpaRepository<ProductoCarrito, Long> {
     List<ProductoCarrito> findByCarrito(Carrito carrito);
+    void deleteByCarrito(Carrito carrito);
 }

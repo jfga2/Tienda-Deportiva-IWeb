@@ -38,7 +38,9 @@
             <p>Subtotal: <span th:text="${precioTotal} + ' €'">0 €</span></p>
             <p>Gastos de envío: Gratuito</p>
             <p><strong>Total: <span th:text="${precioTotal} + ' €'">0 €</span></strong></p>
-            <button class="btn btn-primary btn-block">Finalizar compra</button>
+            <form th:action="@{/carrito/finalizar}" method="POST">
+                <button type="submit" class="btn btn-primary btn-block">Finalizar compra</button>
+            </form>
         </div>
     </div>
 </div>
