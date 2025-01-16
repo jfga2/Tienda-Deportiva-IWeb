@@ -24,6 +24,7 @@
             <!-- Enlace "Mis Usuarios" visible solo si es administrador -->
             <a class="navbar-brand" href="/registrados" th:if="${esAdministrador}">Mis Usuarios</a>
             <a class="navbar-brand" href="/crearProducto" th:if="${esAdministrador}">Crear Producto</a>
+            <a class="navbar-brand" href="/categorias" th:if="${esAdministrador}">Listar Categorías</a>
 
             <!-- Icono de carrito de la compra (solo si el usuario está logueado) -->
             <a class="navbar-brand cart-icon" th:href="@{/carrito}" th:if="${usuarioId != null}">

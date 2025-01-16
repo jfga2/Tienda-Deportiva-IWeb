@@ -24,8 +24,20 @@ public class CategoriaService {
         return categoriaRepository.save(categoria);
     }
 
+    // Obtener todas las categorías
+    public List<Categoria> obtenerCategorias() {
+        return categoriaRepository.findAll();
+    }
+
     // Obtener una categoría por nombre
     public Categoria obtenerCategoriaPorNombre(String nombre) {
         return categoriaRepository.findByNombre(nombre);
+    }
+
+    // Eliminar una categoría por ID
+    public void eliminarCategoria(Long id) {
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada con el ID: " + id));
+        categoriaRepository.delete(categoria);
     }
 }
