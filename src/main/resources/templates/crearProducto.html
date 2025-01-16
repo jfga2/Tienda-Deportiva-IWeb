@@ -33,7 +33,10 @@
         <!-- Campo Categoría -->
         <div class="form-group">
             <label for="categoria">Categoría</label>
-            <input id="categoria" type="text" th:field="*{categoria}" placeholder="Categoría" class="form-control" required>
+            <select id="categoria" th:field="*{categoria}" class="form-control" required>
+                <option value="" disabled selected>Seleccione una categoría</option>
+                <option th:each="categoria : ${categorias}" th:value="${categoria.nombre}" th:text="${categoria.nombre}"></option>
+            </select>
             <div class="text-danger" th:if="${#fields.hasErrors('categoria')}" th:errors="*{categoria}"></div>
         </div>
 

@@ -4,6 +4,7 @@ import JaySports.dto.ProductoData;
 import JaySports.model.Comentario;
 import JaySports.model.Producto;
 import JaySports.model.Usuario;
+import JaySports.service.CategoriaService;
 import JaySports.service.ComentarioService;
 import JaySports.service.ProductoService;
 import JaySports.authentication.ManagerUserSession;
@@ -21,6 +22,9 @@ public class ProductoController {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private CategoriaService categoriaService;
 
     @Autowired
     private ManagerUserSession managerUserSession;
@@ -44,12 +48,14 @@ public class ProductoController {
 
         // Añadir atributos al modelo
         model.addAttribute("productoData", new ProductoData());
+        model.addAttribute("categorias", categoriaService.obtenerCategorias());
         model.addAttribute("usuarioId", managerUserSession.usuarioLogeado());
         model.addAttribute("esAdministrador", managerUserSession.esAdministrador());
         model.addAttribute("nombreUsuario", managerUserSession.obtenerNombreUsuario());
 
         return "crearProducto"; // Renderiza la vista crearProducto.html
     }
+
 
     /**
      * Procesar el formulario de creación de productos.
@@ -72,6 +78,10 @@ public class ProductoController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorMessage", "Por favor, corrige los errores del formulario.");
             model.addAttribute("productoData", productoData);
+
+            // Volver a cargar las categorías para el campo desplegable
+            model.addAttribute("categorias", categoriaService.obtenerCategorias());
+
             model.addAttribute("usuarioId", managerUserSession.usuarioLogeado());
             model.addAttribute("esAdministrador", managerUserSession.esAdministrador());
             model.addAttribute("nombreUsuario", managerUserSession.obtenerNombreUsuario());
@@ -84,12 +94,17 @@ public class ProductoController {
             model.addAttribute("successMessage", "El producto se ha creado exitosamente.");
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
+
+            // Volver a cargar las categorías para el campo desplegable
+            model.addAttribute("categorias", categoriaService.obtenerCategorias());
+
             return "crearProducto";
         }
 
-        // Redirigir después de 3 segundos
+        // Redirigir a la lista de productos
         return "redirect:/productos";
     }
+
 
     /**
      * Listar productos con paginación.
@@ -149,13 +164,17 @@ public class ProductoController {
                 producto.getFoto(),
                 producto.getStock()
         );
+
+        // Añadir datos al modelo
         model.addAttribute("productoData", productoData);
+        model.addAttribute("categorias", categoriaService.obtenerCategorias());
         model.addAttribute("usuarioId", managerUserSession.usuarioLogeado());
         model.addAttribute("esAdministrador", managerUserSession.esAdministrador());
         model.addAttribute("nombreUsuario", managerUserSession.obtenerNombreUsuario());
 
         return "editarProducto"; // Renderiza la vista editarProducto.html
     }
+
 
     /**
      * Procesar la edición de un producto.
@@ -182,6 +201,10 @@ public class ProductoController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorMessage", "Por favor, corrige los errores del formulario.");
             model.addAttribute("productoData", productoData);
+
+            // Volver a cargar las categorías para el campo desplegable
+            model.addAttribute("categorias", categoriaService.obtenerCategorias());
+
             model.addAttribute("usuarioId", managerUserSession.usuarioLogeado());
             model.addAttribute("esAdministrador", managerUserSession.esAdministrador());
             model.addAttribute("nombreUsuario", managerUserSession.obtenerNombreUsuario());
@@ -194,6 +217,7 @@ public class ProductoController {
         // Redirigir a la lista de productos
         return "redirect:/productos";
     }
+
 
     /**
      * Eliminar un producto.

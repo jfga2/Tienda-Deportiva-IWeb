@@ -27,7 +27,7 @@ public class ComentarioService {
         comentario.setUsuario(usuario);
         comentario.setContenido(contenido);
         comentario.setFechaCreacion(new Date());
-        comentario.setVisible(false); // Los comentarios por defecto no son visibles
+        comentario.setVisible(true); // Los comentarios por defecto son visibles
         return comentarioRepository.save(comentario);
     }
 
