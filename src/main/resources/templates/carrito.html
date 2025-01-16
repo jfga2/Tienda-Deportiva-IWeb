@@ -28,6 +28,24 @@
                                 Cantidad: <span th:text="${productoCarrito.cantidad}">1</span><br>
                                 Subtotal: <span th:text="${productoCarrito.subtotal} + ' €'">0 €</span>
                             </p>
+                            <!-- Botones para eliminar, incrementar y decrementar -->
+                            <div class="btn-group" role="group">
+                                <form th:action="@{/carrito/eliminar/{productoCarritoId}(productoCarritoId=${productoCarrito.id})}" method="POST">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fa fa-trash"></i> Eliminar
+                                    </button>
+                                </form>
+                                <form th:action="@{/carrito/incrementar/{productoCarritoId}(productoCarritoId=${productoCarrito.id})}" method="POST">
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </form>
+                                <form th:action="@{/carrito/decrementar/{productoCarritoId}(productoCarritoId=${productoCarrito.id})}" method="POST">
+                                    <button type="submit" class="btn btn-warning btn-sm">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -38,7 +56,9 @@
             <p>Subtotal: <span th:text="${precioTotal} + ' €'">0 €</span></p>
             <p>Gastos de envío: Gratuito</p>
             <p><strong>Total: <span th:text="${precioTotal} + ' €'">0 €</span></strong></p>
-            <button class="btn btn-primary btn-block">Finalizar compra</button>
+            <form th:action="@{/carrito/finalizar}" method="POST">
+                <button type="submit" class="btn btn-primary btn-block">Finalizar compra</button>
+            </form>
         </div>
     </div>
 </div>

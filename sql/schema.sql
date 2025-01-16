@@ -77,3 +77,28 @@ ALTER TABLE ONLY public.usuarios
 -- PostgreSQL database dump complete
 --
 
+-- Tabla `pedido`
+CREATE TABLE pedido (
+                        id SERIAL PRIMARY KEY,
+                        numero_pedido VARCHAR(255) UNIQUE NOT NULL,
+                        fecha_pedido TIMESTAMP NOT NULL,
+                        estado VARCHAR(255) NOT NULL,
+                        total NUMERIC(10, 2) NOT NULL,
+                        tipo_entrega VARCHAR(255),
+                        detalles TEXT,
+                        id_usuario BIGINT NOT NULL,
+                        FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE
+);
+
+-- Tabla `producto_pedido`
+CREATE TABLE producto_pedido (
+                                 id SERIAL PRIMARY KEY,
+                                 id_pedido BIGINT NOT NULL,
+                                 id_producto BIGINT NOT NULL,
+                                 cantidad INT NOT NULL,
+                                 precio_unitario NUMERIC(10, 2) NOT NULL,
+                                 subtotal NUMERIC(10, 2) NOT NULL,
+                                 FOREIGN KEY (id_pedido) REFERENCES pedido(id) ON DELETE CASCADE,
+                                 FOREIGN KEY (id_producto) REFERENCES producto(id) ON DELETE CASCADE
+);
+
