@@ -1,7 +1,10 @@
 package JaySports.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,10 +12,13 @@ import java.util.Objects;
 @Table(name = "carrito")
 public class Carrito implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @OneToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
@@ -21,15 +27,18 @@ public class Carrito implements Serializable {
     private Double precioTotal;
 
     @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductoCarrito> productosCarrito;
+    private List<ProductoCarrito> productosCarrito = new ArrayList<>();
 
+    // Constructor vacío
     public Carrito() {}
 
+    // Constructor con parámetros
     public Carrito(Usuario usuario, Double precioTotal) {
         this.usuario = usuario;
         this.precioTotal = precioTotal;
     }
 
+    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -62,16 +71,43 @@ public class Carrito implements Serializable {
         this.productosCarrito = productosCarrito;
     }
 
+    // Métodos auxiliares para gestionar la relación con ProductoCarrito
+    public void agregarProductoCarrito(ProductoCarrito productoCarrito) {
+        productosCarrito.add(productoCarrito);
+        productoCarrito.setCarrito(this);
+    }
+
+    public void eliminarProductoCarrito(ProductoCarrito productoCarrito) {
+        productosCarrito.remove(productoCarrito);
+        productoCarrito.setCarrito(null);
+    }
+
+    public void vaciarProductos() {
+        for (ProductoCarrito productoCarrito : new ArrayList<>(productosCarrito)) {
+            eliminarProductoCarrito(productoCarrito);
+        }
+    }
+
+    // Métodos equals y hashCode
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Carrito carrito = (Carrito) o;
-        return id.equals(carrito.id);
+        return Objects.equals(id, carrito.id);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Carrito{" +
+                "id=" + id +
+                ", usuario=" + usuario.getId() +
+                ", precioTotal=" + precioTotal +
+                '}';
     }
 }

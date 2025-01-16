@@ -1,6 +1,7 @@
 package JaySports.service;
 
 import JaySports.dto.UsuarioData;
+import JaySports.model.Carrito;
 import JaySports.model.Usuario;
 import JaySports.repository.UsuarioRepository;
 import org.modelmapper.ModelMapper;
@@ -29,6 +30,9 @@ public class UsuarioService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private CarritoService carritoService;
 
     // Método para el login del usuario
     @Transactional(readOnly = true)
@@ -64,6 +68,10 @@ public class UsuarioService {
 
         Usuario usuarioNuevo = modelMapper.map(usuarioData, Usuario.class);
         usuarioNuevo = usuarioRepository.save(usuarioNuevo);
+
+        // Crear un carrito vacío para el nuevo usuario
+        carritoService.obtenerCarritoPorUsuario(usuarioNuevo);
+
         return modelMapper.map(usuarioNuevo, UsuarioData.class);
     }
 
@@ -88,6 +96,10 @@ public class UsuarioService {
     public void eliminarUsuario(Long idUsuario) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new UsuarioServiceException("No existe usuario con id " + idUsuario));
+
+        // Eliminar el carrito asociado
+        carritoService.eliminarCarritoPorUsuario(usuario);
+
         usuarioRepository.delete(usuario);
     }
 

@@ -9,14 +9,12 @@ import JaySports.authentication.ManagerUserSession;
 import JaySports.service.ProductoCarritoService;
 import JaySports.service.ProductoService;
 import JaySports.service.PedidoService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 import java.util.List;
 
@@ -40,7 +38,6 @@ public class CarritoController {
     private ManagerUserSession managerUserSession;
 
     private static final Logger logger = LoggerFactory.getLogger(CarritoController.class);
-
 
     /**
      * Mostrar la vista del carrito de compras.
@@ -82,72 +79,139 @@ public class CarritoController {
      * Añadir un producto al carrito.
      *
      * @param productoId ID del producto que se desea añadir.
-     * @param model      Modelo para pasar datos a la vista.
      * @return Redirige a la página anterior o al carrito.
      */
     @PostMapping("/agregar/{productoId}")
-    @Transactional
-    public String agregarProductoAlCarrito(@PathVariable Long productoId, Model model) {
-        // Verificar si el usuario está logueado
+    public String agregarProductoAlCarrito(@PathVariable Long productoId) {
+        logger.info("Inicio de agregarProductoAlCarrito con productoId: {}", productoId);
+
         Usuario usuario = managerUserSession.obtenerUsuarioLogeado();
         if (usuario == null) {
-            return "redirect:/login"; // Redirigir al login si no está logueado
+            logger.warn("Usuario no logueado, redirigiendo a login.");
+            return "redirect:/login";
         }
 
-        // Obtener el carrito del usuario
+        logger.info("Usuario logueado: {}", usuario.getId());
+
         Carrito carrito = carritoService.obtenerCarritoPorUsuario(usuario);
+        logger.info("Carrito obtenido: {}", carrito.getId());
 
-        // Inicializar la colección productosCarrito para evitar LazyInitializationException
-        carrito.getProductosCarrito().size();
-
-        // Obtener el producto desde la base de datos
         Producto producto = productoService.obtenerProductoPorId(productoId);
+        logger.info("Producto obtenido: {} - {}", producto.getId(), producto.getNombre());
 
-        // Verificar si el producto ya está en el carrito
         ProductoCarrito productoExistente = carrito.getProductosCarrito().stream()
                 .filter(pc -> pc.getProducto().getId().equals(productoId))
                 .findFirst()
                 .orElse(null);
 
         if (productoExistente != null) {
-            // Si el producto ya existe, incrementar su cantidad
+            logger.info("Producto ya existe en el carrito. Incrementando cantidad.");
             productoCarritoService.actualizarCantidad(productoExistente, productoExistente.getCantidad() + 1);
         } else {
-            // Si el producto no existe, añadirlo al carrito
+            logger.info("Producto no encontrado en el carrito. Agregándolo.");
             productoCarritoService.agregarProductoAlCarrito(carrito, producto, 1);
         }
 
-        // Actualizar el precio total del carrito
         carritoService.actualizarPrecioTotal(carrito);
+        logger.info("Precio total del carrito actualizado: {}", carrito.getPrecioTotal());
 
-        return "redirect:/productos"; // Redirigir a la lista de productos
+        return "redirect:/productos";
     }
 
     /**
      * Eliminar un producto del carrito.
-     *
-     * @param productoCarritoId ID del ProductoCarrito que se desea eliminar.
-     * @return Redirige a la vista del carrito.
      */
     @PostMapping("/eliminar/{productoCarritoId}")
     public String eliminarProductoDelCarrito(@PathVariable Long productoCarritoId) {
-        // Obtener el producto del carrito
-        ProductoCarrito productoCarrito = productoCarritoService.obtenerProductosPorCarrito(null).stream()
+        Usuario usuario = managerUserSession.obtenerUsuarioLogeado();
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        // Obtener el carrito del usuario
+        Carrito carrito = carritoService.obtenerCarritoPorUsuario(usuario);
+
+        // Verificar si el producto pertenece al carrito del usuario
+        productoCarritoService.eliminarProductoPorId(productoCarritoId);
+
+        // Actualizar el precio total del carrito
+        carritoService.actualizarPrecioTotal(carrito);
+
+        return "redirect:/carrito";
+    }
+    /**
+     * Incrementar la cantidad de un producto en el carrito.
+     *
+     * @param productoCarritoId ID del ProductoCarrito cuya cantidad se desea incrementar.
+     * @return Redirige a la vista del carrito.
+     */
+    @PostMapping("/incrementar/{productoCarritoId}")
+    public String incrementarCantidadProducto(@PathVariable Long productoCarritoId, Model model) {
+        logger.debug("Iniciando incremento de cantidad para producto ID: {}", productoCarritoId);
+
+        Usuario usuario = managerUserSession.obtenerUsuarioLogeado();
+        if (usuario == null) {
+            logger.warn("Usuario no logueado, redirigiendo a login.");
+            return "redirect:/login";
+        }
+
+        Carrito carrito = carritoService.obtenerCarritoPorUsuario(usuario);
+        logger.debug("Carrito obtenido: {}", carrito.getId());
+
+        ProductoCarrito productoCarrito = productoCarritoService.obtenerProductosPorCarrito(carrito).stream()
                 .filter(pc -> pc.getId().equals(productoCarritoId))
                 .findFirst()
                 .orElse(null);
 
         if (productoCarrito != null) {
-            productoCarritoService.eliminarProductoDelCarrito(productoCarrito);
+            logger.debug("Producto encontrado en el carrito: {}", productoCarrito.getProducto().getNombre());
+            productoCarritoService.actualizarCantidad(productoCarrito, productoCarrito.getCantidad() + 1);
+            carritoService.actualizarPrecioTotal(carrito);
+            logger.info("Cantidad actualizada correctamente. Nueva cantidad: {}", productoCarrito.getCantidad());
+        } else {
+            logger.error("Producto no encontrado en el carrito.");
+        }
 
-            // Actualizar el precio total del carrito
-            Carrito carrito = productoCarrito.getCarrito();
+        return "redirect:/carrito";
+    }
+
+    /**
+     * Decrementar la cantidad de un producto en el carrito.
+     *
+     * @param productoCarritoId ID del ProductoCarrito cuya cantidad se desea decrementar.
+     * @return Redirige a la vista del carrito.
+     */
+    @PostMapping("/decrementar/{productoCarritoId}")
+    public String decrementarCantidadProducto(@PathVariable Long productoCarritoId) {
+        Usuario usuario = managerUserSession.obtenerUsuarioLogeado();
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        Carrito carrito = carritoService.obtenerCarritoPorUsuario(usuario);
+        ProductoCarrito productoCarrito = productoCarritoService.obtenerProductosPorCarrito(carrito).stream()
+                .filter(pc -> pc.getId().equals(productoCarritoId))
+                .findFirst()
+                .orElse(null);
+
+        if (productoCarrito != null) {
+            if (productoCarrito.getCantidad() > 1) {
+                productoCarritoService.actualizarCantidad(productoCarrito, productoCarrito.getCantidad() - 1);
+            } else {
+                productoCarritoService.eliminarProductoDelCarrito(productoCarrito);
+            }
             carritoService.actualizarPrecioTotal(carrito);
         }
 
         return "redirect:/carrito";
     }
 
+    /**
+     * Finalizar la compra.
+     *
+     * @param model Modelo para pasar datos a la vista.
+     * @return Redirige a la página de pedidos o carrito en caso de error.
+     */
     @PostMapping("/finalizar")
     public String finalizarCompra(Model model) {
         logger.debug("Iniciando finalizarCompra");
@@ -164,10 +228,8 @@ public class CarritoController {
                 return "redirect:/carrito";
             }
 
-            logger.debug("Ha entrado");
-
             pedidoService.crearPedidoDesdeCarrito(usuario, carrito);
-            return "redirect:/pedidos";
+            return "redirect:/productos";
         } catch (IllegalStateException e) {
             model.addAttribute("error", e.getMessage());
             return "redirect:/carrito";

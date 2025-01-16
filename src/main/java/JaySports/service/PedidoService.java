@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 
 @Service
 public class PedidoService {
@@ -58,11 +60,6 @@ public class PedidoService {
     }
 
     private String generarNumeroPedido() {
-        String yearPrefix = String.valueOf(LocalDateTime.now().getYear());
-        String numeroBase = pedidoRepository.findLastPedidoNumberByYear(yearPrefix)
-                .map(num -> String.format("%04d", Integer.parseInt(num.substring(5)) + 1))
-                .orElse("0001");
-
-        return String.format("PED-%s-%s", yearPrefix, numeroBase);
+        return "PED-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }
