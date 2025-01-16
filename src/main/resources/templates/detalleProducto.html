@@ -38,6 +38,31 @@
             </form>
         </div>
     </div>
+
+    <!-- Formulario para añadir un nuevo comentario -->
+    <div class="container mt-4">
+        <h3>Añadir un comentario</h3>
+        <form th:action="@{'/detalleProducto/' + ${producto.id} + '/comentario'}" method="post">
+            <div class="form-group">
+                <textarea class="form-control" name="contenido" rows="3" placeholder="Escribe tu comentario aquí..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-success mt-2">Enviar comentario</button>
+        </form>
+    </div>
+
+    <!-- Listar comentarios -->
+    <div class="container mt-5">
+        <h2>Comentarios</h2>
+        <ul class="list-group">
+            <li class="list-group-item" th:each="comentario : ${comentarios}">
+                <strong th:text="${comentario.usuario.nombre}">Nombre del Usuario</strong>:
+                <p th:text="${comentario.contenido}">Contenido del comentario</p>
+                <small class="text-muted" th:text="${#dates.format(comentario.fechaCreacion, 'dd/MM/yyyy HH:mm')}">
+                    Fecha del comentario
+                </small>
+            </li>
+        </ul>
+    </div>
 </div>
 
 <div th:fragment="javascript" th:replace="fragments.html :: javascript"></div>
